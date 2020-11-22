@@ -8,4 +8,5 @@ public interface GameService {
     GameResponseDTO joinGame(String nickname, Long id);
     GameResponseDTO play(String nickname, Long id, int column);
     GameResponseDTO getGameStatus(String nickname, Long id);
+    GameResponseDTO cheatPlay(String nickname, Long id);
 }

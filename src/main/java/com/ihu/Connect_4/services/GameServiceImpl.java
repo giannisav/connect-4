@@ -21,12 +21,14 @@ public class GameServiceImpl implements GameService {
     private final PlayerRepository playerRepository;
     private final GameMapper mapper;
     private final BoardUtil boardUtil;
+    private final CheatService cheatService;
 
-    public GameServiceImpl(GameRepository repository, PlayerRepository playerRepository, GameMapper mapper, BoardUtil boardUtil) {
+    public GameServiceImpl(GameRepository repository, PlayerRepository playerRepository, GameMapper mapper, BoardUtil boardUtil, CheatService cheatService) {
         this.repository = repository;
         this.playerRepository = playerRepository;
         this.mapper = mapper;
         this.boardUtil = boardUtil;
+        this.cheatService = cheatService;
     }
 
     @Transactional
@@ -98,6 +100,18 @@ public class GameServiceImpl implements GameService {
             throw new UnauthorizedPlayerException("You are not authorized to play to this game!");
         }
         return mapper.mapToGameResponseDTO(game);
+    }
+
+    @Transactional
+    @Override
+    public GameResponseDTO cheatPlay(String nickname, Long id) {
+        Game game = repository.findById(id)
+                .orElseThrow(() ->new NotExistingGameException("There is no game with id: " + id));
+        if(!(game.getYellowPlayer().getNickname().equals(nickname) || game.getRedPlayer().getNickname().equals(nickname))) {
+            throw new UnauthorizedPlayerException("You are not authorized to play to this game!");
+        }
+        int bestValidColumn = cheatService.getBestMove(game.getBoardMoves());
+        return play(nickname, id, bestValidColumn);
     }
 
     private GameResponseDTO gameHasWinner(Game game, String nickname, Integer column) {

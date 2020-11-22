@@ -38,6 +38,11 @@ public class GameController {
         return ResponseEntity.ok().body(gameService.getGameStatus(nickname, id));
     }
 
+    @PostMapping("/cheat")
+    public ResponseEntity<GameResponseDTO> cheat(@RequestParam("nickname") String nickname, @RequestParam("id") Long id)  {
+        return ResponseEntity.ok().body(gameService.cheatPlay(nickname, id));
+    }
+
     @ExceptionHandler({ NotExistingPlayerException.class, NotExistingGameException.class, InvalidMoveException.class,
             InvalidTurnPlayException.class, UnauthorizedPlayerException.class, FullGameException.class })
     public ResponseEntity<String> badRequestExceptionHandler(RuntimeException exception) {

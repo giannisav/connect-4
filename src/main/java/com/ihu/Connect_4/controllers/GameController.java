@@ -3,6 +3,7 @@ package com.ihu.Connect_4.controllers;
 import com.ihu.Connect_4.dtos.GameResponseDTO;
 import com.ihu.Connect_4.exceptions.*;
 import com.ihu.Connect_4.services.GameService;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

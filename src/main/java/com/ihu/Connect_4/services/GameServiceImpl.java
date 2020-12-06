@@ -68,16 +68,16 @@ public class GameServiceImpl implements GameService {
         Game game = repository.findById(id)
                 .orElseThrow(() ->new NotExistingGameException("There is no game with id: " + id));
         if(!(game.getYellowPlayer().getNickname().equals(nickname) || game.getRedPlayer().getNickname().equals(nickname))) {
-            throw new UnauthorizedPlayerException("You are not authorized to play to this game!");
+            throw new UnauthorizedPlayerException("You are not authorized to play to this game");
         }
         if(game.getGameState()!= GameState.RUNNING) {
-            throw new InvalidTurnPlayException("GameStatus shows that you cant play!");
+            throw new InvalidTurnPlayException("Its not your turn to play");
         }
         if(!game.getNextMoveNickname().equals(nickname)) {
-            throw new InvalidTurnPlayException("Its not your turn! Wait your opponent to play.");
+            throw new InvalidTurnPlayException("Its not your turn! Wait your opponent to play");
         }
         if(boardUtil.moveIsInvalid(game.getBoardMoves(), column)) {
-            throw new InvalidMoveException("Invalid move! Please choose another.");
+            throw new InvalidMoveException("Invalid move! Please choose another");
         }
         if(boardUtil.moveIsWinning(game.getBoardMoves(), column)) {
             return gameHasWinner(game, nickname, column);
@@ -97,7 +97,7 @@ public class GameServiceImpl implements GameService {
         Game game = repository.findById(id)
                 .orElseThrow(() ->new NotExistingGameException("There is no game with id: " + id));
         if(!(game.getYellowPlayer().getNickname().equals(nickname) || game.getRedPlayer().getNickname().equals(nickname))) {
-            throw new UnauthorizedPlayerException("You are not authorized to play to this game!");
+            throw new UnauthorizedPlayerException("You are not authorized to play to this game");
         }
         return mapper.mapToGameResponseDTO(game);
     }
@@ -108,7 +108,7 @@ public class GameServiceImpl implements GameService {
         Game game = repository.findById(id)
                 .orElseThrow(() ->new NotExistingGameException("There is no game with id: " + id));
         if(!(game.getYellowPlayer().getNickname().equals(nickname) || game.getRedPlayer().getNickname().equals(nickname))) {
-            throw new UnauthorizedPlayerException("You are not authorized to play to this game!");
+            throw new UnauthorizedPlayerException("You are not authorized to play to this game");
         }
         int bestValidColumn = cheatService.getBestMove(game.getBoardMoves());
         return play(nickname, id, bestValidColumn);
@@ -137,7 +137,7 @@ public class GameServiceImpl implements GameService {
     }
 
     private GameResponseDTO resultIsDraw(Game game, Integer column) {
-        game.setNextMoveNickname("Result is a draw!");
+        game.setNextMoveNickname("Result is a draw");
         game.setBoardMoves(game.getBoardMoves() + column);
         game.setGameState(GameState.FINISHED);
         game.getYellowPlayer().setGamesPlayed(game.getYellowPlayer().getGamesPlayed() + 1);

@@ -10,7 +10,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,7 +24,7 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     public PlayerDTO savePlayer(String nickname) {
-        Player player = Optional.ofNullable(repository.findByNickname(nickname)).orElse(new Player(nickname, 1000L, 0L, 0L, 0L, 0L));
+        Player player = repository.findByNickname(nickname).orElse(new Player(nickname, 1000L, 0L, 0L, 0L, 0L));
         return mapper.mapToPlayerDTO(repository.save(player));
     }
 

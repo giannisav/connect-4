@@ -11,6 +11,7 @@ public class BoardUtil {
 
     private static final int COLUMNS = 7;
     private static final int ROWS = 6;
+    private static final int BOARD_CAPACITY = 42;
     private static final char EMPTY = '-';
 
     public char[][] initEmpty2DBoard() {
@@ -24,12 +25,12 @@ public class BoardUtil {
             return true;
         }
         moves = moves + column;
-        Map<Character, Long> frequency = moves.chars()
-                                              .mapToObj(c -> (char)c)
-                                              .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
-        return frequency.values()
-                .stream()
-                .anyMatch(freq -> freq >= 7);
+        Map<Character, Long> frequencyOfColumns = moves.chars()
+                                                       .mapToObj(c -> (char)c)
+                                                       .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+        return frequencyOfColumns.values()
+                                 .stream()
+                                 .anyMatch(freq -> freq >= 7);
     }
 
     public char[][] convertTo2DBoard(String moves) {
@@ -71,6 +72,10 @@ public class BoardUtil {
             }
         }
         return board;
+    }
+
+    public boolean gameIsDrawIfMoveIsNotWinning(String moves) {
+        return moves.length() == BOARD_CAPACITY - 1;
     }
 
     public boolean moveIsWinning(String moves, Integer newColumn) {

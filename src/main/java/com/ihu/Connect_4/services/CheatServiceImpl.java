@@ -21,7 +21,7 @@ public class CheatServiceImpl implements CheatService{
         this.restTemplate = restTemplateBuilder.build();
     }
 
-    public int getBestMove(String moves) {
+    public Integer getBestMove(String moves) {
         CheatDTO response;
         try {
             response = Optional.ofNullable(this.restTemplate.getForObject(URL + moves, CheatDTO.class))

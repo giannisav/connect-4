@@ -12,7 +12,6 @@ import com.ihu.Connect_4.utils.BoardUtil;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -35,9 +34,8 @@ public class GameServiceImpl implements GameService {
     @Transactional
     @Override
     public GameResponseDTO createGame(String nickname) {
+        Player player = validatePlayerExists(nickname);
         Game game = new Game();
-        Player player = Optional.ofNullable(playerRepository.findByNickname(nickname))
-                .orElseThrow(() -> new NotExistingPlayerException("There is no player with nickname: " + nickname));
         player.setFakeToken(UUID.randomUUID().toString());
         game.setYellowPlayer(player);
         game.setNextMoveNickname("Waiting the opponent to connect");
@@ -48,15 +46,13 @@ public class GameServiceImpl implements GameService {
     @Transactional
     @Override
     public GameResponseDTO joinGame(String nickname, Long id) {
-        Game game = repository.findById(id)
-                .orElseThrow(() ->new NotExistingGameException("There is no game with id: " + id));
-        Player player = Optional.ofNullable(playerRepository.findByNickname(nickname))
-                .orElseThrow(() -> new NotExistingPlayerException("There is no player with nickname: " + nickname));
+        Game game = validateGameExists(id);
+        Player player = validatePlayerExists(nickname);
         if(nickname.equals(game.getYellowPlayer().getNickname())) {
-            throw new UnauthorizedPlayerException("Sorry you are not allowed to win your self!  ");
+            throw new UnauthorizedPlayerException("Sorry you are not allowed to win your self");
         }
         if(null != game.getYellowPlayer() && null != game.getRedPlayer()) {
-            throw new FullGameException("Sorry this game is full.");
+            throw new FullGameException("Sorry this game is full");
         }
         player.setFakeToken(UUID.randomUUID().toString());
         game.setNextMoveNickname(game.getYellowPlayer().getNickname());
@@ -67,30 +63,13 @@ public class GameServiceImpl implements GameService {
 
     @Transactional
     @Override
-    public GameResponseDTO play(String nickname,String token, Long id, int column) {
-        Game game = repository.findById(id)
-                .orElseThrow(() ->new NotExistingGameException("There is no game with id: " + id));
-        Player player = Optional.ofNullable(playerRepository.findByNickname(nickname))
-                .orElseThrow(() -> new NotExistingPlayerException("There is no player with nickname: " + nickname));
-        if(!(game.getYellowPlayer().getNickname().equals(nickname) || game.getRedPlayer().getNickname().equals(nickname))) {
-            throw new UnauthorizedPlayerException("You are not authorized to play to this game");
-        }
-        if(!player.getFakeToken().equals(token)) {
-            throw new UnauthorizedPlayerException("Not verified as " + nickname);
-        }
-        if(game.getGameState()!= GameState.RUNNING) {
-            throw new InvalidTurnPlayException("Its not your turn to play");
-        }
-        if(!game.getNextMoveNickname().equals(nickname)) {
-            throw new InvalidTurnPlayException("Its not your turn! Wait your opponent to play");
-        }
-        if(boardUtil.moveIsInvalid(game.getBoardMoves(), column)) {
-            throw new InvalidMoveException("Invalid move! Please choose another");
-        }
+    public GameResponseDTO play(String nickname,String token, Long id, Integer column) {
+        Game game = validateGameExists(id);
+        checkRules(nickname, token, game, column);
         if(boardUtil.moveIsWinning(game.getBoardMoves(), column)) {
             return gameHasWinner(game, nickname, column);
         }
-        if(game.getBoardMoves().length() == 41) {
+        if(boardUtil.gameIsDrawIfMoveIsNotWinning(game.getBoardMoves())) {
             return resultIsDraw(game, column);
         }
         String nextMoveNickname = nickname.equals(game.getYellowPlayer().getNickname()) ? game.getRedPlayer().getNickname() : game.getYellowPlayer().getNickname();
@@ -102,8 +81,7 @@ public class GameServiceImpl implements GameService {
     @Transactional
     @Override
     public GameResponseDTO getGameStatus(String nickname, Long id) {
-        Game game = repository.findById(id)
-                .orElseThrow(() ->new NotExistingGameException("There is no game with id: " + id));
+        Game game = validateGameExists(id);
         if(!(game.getYellowPlayer().getNickname().equals(nickname) || game.getRedPlayer().getNickname().equals(nickname))) {
             throw new UnauthorizedPlayerException("You are not authorized to play to this game");
         }
@@ -113,9 +91,8 @@ public class GameServiceImpl implements GameService {
     @Transactional
     @Override
     public GameResponseDTO cheatPlay(String nickname, String token, Long id) {
-        Game game = repository.findById(id)
-                .orElseThrow(() ->new NotExistingGameException("There is no game with id: " + id));
-        int bestValidColumn = cheatService.getBestMove(game.getBoardMoves());
+        Game game = validateGameExists(id);
+        Integer bestValidColumn = cheatService.getBestMove(game.getBoardMoves());
         return play(nickname, token, id, bestValidColumn);
     }
 
@@ -123,20 +100,14 @@ public class GameServiceImpl implements GameService {
         game.setNextMoveNickname("Our winner is: " + nickname);
         game.setBoardMoves(game.getBoardMoves() + column);
         game.setGameState(GameState.FINISHED);
-        if(nickname.equals(game.getYellowPlayer().getNickname())) {
-            game.getYellowPlayer().setPoints(game.getYellowPlayer().getPoints() + 3);
-            game.getYellowPlayer().setGamesPlayed(game.getYellowPlayer().getGamesPlayed() + 1);
-            game.getYellowPlayer().setWins(game.getYellowPlayer().getWins() + 1);
-            game.getRedPlayer().setPoints(game.getRedPlayer().getPoints() - 3);
-            game.getRedPlayer().setGamesPlayed(game.getRedPlayer().getGamesPlayed() + 1);
-            game.getRedPlayer().setLoses(game.getRedPlayer().getLoses() + 1);
+        Player yellow = game.getYellowPlayer();
+        Player red = game.getRedPlayer();
+        if(nickname.equals(yellow.getNickname())) {
+            winnerSettings(yellow);
+            loserSettings(red);
         } else {
-            game.getRedPlayer().setPoints(game.getRedPlayer().getPoints() + 3);
-            game.getRedPlayer().setGamesPlayed(game.getRedPlayer().getGamesPlayed() + 1);
-            game.getRedPlayer().setWins(game.getRedPlayer().getWins() + 1);
-            game.getYellowPlayer().setPoints(game.getYellowPlayer().getPoints() - 3);
-            game.getYellowPlayer().setGamesPlayed(game.getYellowPlayer().getGamesPlayed() + 1);
-            game.getYellowPlayer().setLoses(game.getYellowPlayer().getLoses() + 1);
+            winnerSettings(red);
+            loserSettings(yellow);
         }
         return mapper.mapToGameResponseDTO(repository.save(game));
     }
@@ -145,14 +116,54 @@ public class GameServiceImpl implements GameService {
         game.setNextMoveNickname("Result is a draw");
         game.setBoardMoves(game.getBoardMoves() + column);
         game.setGameState(GameState.FINISHED);
-        game.getYellowPlayer().setGamesPlayed(game.getYellowPlayer().getGamesPlayed() + 1);
-        game.getYellowPlayer().setDraws(game.getYellowPlayer().getDraws() + 1);
-        game.getRedPlayer().setGamesPlayed(game.getRedPlayer().getGamesPlayed() + 1);
-        game.getRedPlayer().setDraws(game.getRedPlayer().getDraws() + 1);
+        drawSettings(game.getYellowPlayer());
+        drawSettings(game.getRedPlayer());
         return mapper.mapToGameResponseDTO(repository.save(game));
     }
 
-    private void checkRules(String nickname, Long id) {
-        //TODO: Extract common rules from the other methods
+    private void checkRules(String nickname,String token, Game game, Integer column){
+        Player player = validatePlayerExists(nickname);
+        if(!(game.getYellowPlayer().getNickname().equals(nickname) || game.getRedPlayer().getNickname().equals(nickname))) {
+            throw new UnauthorizedPlayerException("You are not authorized to play to this game");
+        }
+        if(!player.getFakeToken().equals(token)) {
+            throw new UnauthorizedPlayerException("Not authenticated as " + nickname);
+        }
+        if(game.getGameState()!= GameState.RUNNING) {
+            throw new InvalidTurnPlayException("Its not your turn to play");
+        }
+        if(!game.getNextMoveNickname().equals(nickname)) {
+            throw new InvalidTurnPlayException("Its not your turn! Wait your opponent to play");
+        }
+        if(boardUtil.moveIsInvalid(game.getBoardMoves(), column)) {
+            throw new InvalidMoveException("Invalid move! Please choose another");
+        }
+    }
+
+    private Game validateGameExists(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new NotExistingGameException("There is no game with id: " + id));
+    }
+
+    private Player validatePlayerExists(String nickname) {
+        return playerRepository.findByNickname(nickname)
+                .orElseThrow(() -> new NotExistingPlayerException("There is no player with nickname: " + nickname));
+    }
+
+    private void winnerSettings(Player player) {
+        player.setPoints(player.getPoints() + 3);
+        player.setGamesPlayed(player.getGamesPlayed() + 1);
+        player.setWins(player.getWins() + 1);
+    }
+
+    private void loserSettings(Player player) {
+        player.setPoints(player.getPoints() - 3);
+        player.setGamesPlayed(player.getGamesPlayed() + 1);
+        player.setLoses(player.getLoses() + 1);
+    }
+
+    private void drawSettings(Player player){
+        player.setGamesPlayed(player.getGamesPlayed() + 1);
+        player.setDraws(player.getDraws() + 1);
     }
 }

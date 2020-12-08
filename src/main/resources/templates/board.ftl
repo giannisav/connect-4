@@ -166,12 +166,14 @@
 <#include "./parts/navbar.ftl">
 <table class="table">
     <tr>
+        <th>Game Id</th>
         <th>Yellow Player</th>
         <th>Red Player</th>
         <th>Game State</th>
         <th>Next turn</th>
     </tr>
     <tr>
+        <td>${game.id}</td>
         <td>${game.yellowPlayerNickname}</td>
         <td>${game.redPlayerNickname}</td>
         <td>${game.gameState}</td>
@@ -194,6 +196,7 @@
     </div>
     <form action="/play" method="post">
         <input type="hidden" name="nickname" value=${nickname}>
+        <input type="hidden" name="token" value=${(nickname == game.yellowPlayerNickname) ? then (game.yellowToken, game.redToken)}>
         <input type="hidden" name="id" value=${game.id}>
         <input type="text" name="column" placeholder="choose column">
         <input type="submit" value="Play" />
@@ -203,6 +206,7 @@
     </form>
     <form action="/cheat" method="post">
         <input type="hidden" name="nickname" value=${nickname}>
+        <input type="hidden" name="token" value=${(nickname == game.yellowPlayerNickname) ? string(game.yellowToken, game.redToken)}>
         <input type="hidden" name="id" value=${game.id}>
         <input type="submit" class="cheat" value="Cheat">
     </form>

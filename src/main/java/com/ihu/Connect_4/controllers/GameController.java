@@ -29,9 +29,9 @@ public class GameController {
     }
 
     @PostMapping("/play")
-    public ResponseEntity<GameResponseDTO> playGame(@RequestParam("nickname") String nickname, @RequestParam("id") Long id,
-                                                    @RequestParam("column") int column) {
-        return ResponseEntity.ok(gameService.play(nickname, id, column));
+    public ResponseEntity<GameResponseDTO> playGame(@RequestParam("nickname") String nickname, @RequestParam("token") String token,
+                                                    @RequestParam("id") Long id, @RequestParam("column") int column) {
+        return ResponseEntity.ok(gameService.play(nickname, token, id, column));
     }
 
     @GetMapping("/game")
@@ -40,8 +40,9 @@ public class GameController {
     }
 
     @PostMapping("/cheat")
-    public ResponseEntity<GameResponseDTO> cheat(@RequestParam("nickname") String nickname, @RequestParam("id") Long id)  {
-        return ResponseEntity.ok().body(gameService.cheatPlay(nickname, id));
+    public ResponseEntity<GameResponseDTO> cheat(@RequestParam("nickname") String nickname, @RequestParam("token") String token,
+                                                 @RequestParam("id") Long id)  {
+        return ResponseEntity.ok().body(gameService.cheatPlay(nickname, token, id));
     }
 
     @ExceptionHandler({ NotExistingPlayerException.class, NotExistingGameException.class, InvalidMoveException.class,

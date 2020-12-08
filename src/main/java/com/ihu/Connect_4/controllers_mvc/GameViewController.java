@@ -87,16 +87,18 @@ public class GameViewController {
 
     @PostMapping("/play")
     public String play(@ModelAttribute(name = "nickname") String nickname,
+                       @ModelAttribute(name = "token") String token,
                        @ModelAttribute(name = "id") String id,
                        @ModelAttribute(name="column") String column) {
-        gameService.play(nickname, Long.parseLong(id), Integer.parseInt(column));
+        gameService.play(nickname, token, Long.parseLong(id), Integer.parseInt(column));
         return "redirect:/board/" + nickname + "/" + id;
     }
 
     @PostMapping("/cheat")
     public String cheat(@ModelAttribute(name = "nickname") String nickname,
+                        @ModelAttribute(name = "token") String token,
                         @ModelAttribute(name = "id") String id) {
-        gameService.cheatPlay(nickname, Long.parseLong(id));
+        gameService.cheatPlay(nickname, token, Long.parseLong(id));
         return "redirect:/board/" + nickname + "/" + id;
     }
 

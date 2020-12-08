@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class GameServiceImpl implements GameService {
@@ -37,6 +38,7 @@ public class GameServiceImpl implements GameService {
         Game game = new Game();
         Player player = Optional.ofNullable(playerRepository.findByNickname(nickname))
                 .orElseThrow(() -> new NotExistingPlayerException("There is no player with nickname: " + nickname));
+        player.setFakeToken(UUID.randomUUID().toString());
         game.setYellowPlayer(player);
         game.setNextMoveNickname("Waiting the opponent to connect");
         game.setBoardMoves("");
@@ -56,6 +58,7 @@ public class GameServiceImpl implements GameService {
         if(null != game.getYellowPlayer() && null != game.getRedPlayer()) {
             throw new FullGameException("Sorry this game is full.");
         }
+        player.setFakeToken(UUID.randomUUID().toString());
         game.setNextMoveNickname(game.getYellowPlayer().getNickname());
         game.setRedPlayer(player);
         game.setGameState(GameState.RUNNING);
@@ -64,11 +67,16 @@ public class GameServiceImpl implements GameService {
 
     @Transactional
     @Override
-    public GameResponseDTO play(String nickname, Long id, int column) {
+    public GameResponseDTO play(String nickname,String token, Long id, int column) {
         Game game = repository.findById(id)
                 .orElseThrow(() ->new NotExistingGameException("There is no game with id: " + id));
+        Player player = Optional.ofNullable(playerRepository.findByNickname(nickname))
+                .orElseThrow(() -> new NotExistingPlayerException("There is no player with nickname: " + nickname));
         if(!(game.getYellowPlayer().getNickname().equals(nickname) || game.getRedPlayer().getNickname().equals(nickname))) {
             throw new UnauthorizedPlayerException("You are not authorized to play to this game");
+        }
+        if(!player.getFakeToken().equals(token)) {
+            throw new UnauthorizedPlayerException("Not verified as " + nickname);
         }
         if(game.getGameState()!= GameState.RUNNING) {
             throw new InvalidTurnPlayException("Its not your turn to play");
@@ -104,14 +112,11 @@ public class GameServiceImpl implements GameService {
 
     @Transactional
     @Override
-    public GameResponseDTO cheatPlay(String nickname, Long id) {
+    public GameResponseDTO cheatPlay(String nickname, String token, Long id) {
         Game game = repository.findById(id)
                 .orElseThrow(() ->new NotExistingGameException("There is no game with id: " + id));
-        if(!(game.getYellowPlayer().getNickname().equals(nickname) || game.getRedPlayer().getNickname().equals(nickname))) {
-            throw new UnauthorizedPlayerException("You are not authorized to play to this game");
-        }
         int bestValidColumn = cheatService.getBestMove(game.getBoardMoves());
-        return play(nickname, id, bestValidColumn);
+        return play(nickname, token, id, bestValidColumn);
     }
 
     private GameResponseDTO gameHasWinner(Game game, String nickname, Integer column) {

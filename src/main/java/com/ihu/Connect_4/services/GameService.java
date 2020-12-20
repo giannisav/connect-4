@@ -6,7 +6,7 @@ import com.ihu.Connect_4.entities.Game;
 public interface GameService {
     GameResponseDTO createGame(String nickname);
     GameResponseDTO joinGame(String nickname, Long id);
-    GameResponseDTO play(String nickname, String token, Long id, Integer column);
+    GameResponseDTO play(String nickname, String uuid, Long id, Integer column);
     GameResponseDTO getGameStatus(String nickname, Long id);
-    GameResponseDTO cheatPlay(String nickname, String token, Long id);
+    GameResponseDTO cheatPlay(String nickname, String uuid, Long id);
 }

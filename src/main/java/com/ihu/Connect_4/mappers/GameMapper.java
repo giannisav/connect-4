@@ -19,11 +19,11 @@ public class GameMapper {
         gameResponseDTO.setId(game.getId());
         gameResponseDTO.setNextMoveNickname(game.getNextMoveNickname());
         gameResponseDTO.setYellowPlayerNickname(game.getYellowPlayer().getNickname());
-        gameResponseDTO.setYellowToken(game.getYellowPlayer().getFakeToken());
+        gameResponseDTO.setYellowUuid(game.getYellowPlayer().getUuid());
         String redNickname = null == game.getRedPlayer() ? "Not connected" : game.getRedPlayer().getNickname();
         gameResponseDTO.setRedPlayerNickname(redNickname);
-        String redToken = redNickname.equals("Not connected") ? "Empty" : game.getRedPlayer().getFakeToken();
-        gameResponseDTO.setRedToken(redToken);
+        String redUuid = redNickname.equals("Not connected") ? "Empty" : game.getRedPlayer().getUuid();
+        gameResponseDTO.setRedUuid(redUuid);
         gameResponseDTO.setBoard(boardUtil.convertTo2DBoard(game.getBoardMoves()));
         gameResponseDTO.setGameState(game.getGameState().name());
         return gameResponseDTO;

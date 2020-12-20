@@ -1,10 +1,7 @@
-package com.ihu.Connect_4.controllers_mvc;
+package com.ihu.Connect_4.controllers_view;
 
 
 import com.ihu.Connect_4.dtos.GameResponseDTO;
-import com.ihu.Connect_4.dtos.PlayerDTO;
-import com.ihu.Connect_4.enums.SortingOrder;
-import com.ihu.Connect_4.enums.SortingType;
 import com.ihu.Connect_4.services.GameService;
 import com.ihu.Connect_4.services.PlayerService;
 import org.springframework.stereotype.Controller;
@@ -12,7 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
+
 
 @Controller
 public class GameViewController {
@@ -28,12 +25,6 @@ public class GameViewController {
     @GetMapping({"/"})
     public String home() {
         return "/index";
-    }
-
-    @GetMapping("/register")
-    public String registerPage(Model model) {
-        model.addAttribute("nickname", "");
-        return "registerPage";
     }
 
     @GetMapping("/create")
@@ -55,21 +46,6 @@ public class GameViewController {
         GameResponseDTO game = gameService.getGameStatus(nickname, id);
         model.addAttribute("game", game);
         return "/board";
-    }
-
-    @GetMapping(value = "/statistics")
-    public String findStatistics(Model model,
-                                 @RequestParam(value = "sortingType", required = false) SortingType sortingType,
-                                 @RequestParam(value = "sortingOrder", required = false) SortingOrder sortingOrder) {
-        List<PlayerDTO> players = playerService.getPlayerStatistics(sortingType, sortingOrder);
-        model.addAttribute("players", players);
-        return "/statistics";
-    }
-
-    @PostMapping("/register")
-    public String registerPlayer(@ModelAttribute(name = "nickname") String nickname) {
-        playerService.savePlayer(nickname);
-        return "redirect:/";
     }
 
     @PostMapping("/create")

@@ -196,7 +196,7 @@
     </div>
     <form action="/play" method="post">
         <input type="hidden" name="nickname" value=${nickname}>
-        <input type="hidden" name="token" value=${(nickname == game.yellowPlayerNickname) ? then (game.yellowToken, game.redToken)}>
+        <input type="hidden" name="token" value=${(nickname == game.yellowPlayerNickname) ? then (game.yellowUuid, game.redUuid)}>
         <input type="hidden" name="id" value=${game.id}>
         <input type="text" name="column" placeholder="choose column">
         <input type="submit" value="Play" />
@@ -206,7 +206,7 @@
     </form>
     <form action="/cheat" method="post">
         <input type="hidden" name="nickname" value=${nickname}>
-        <input type="hidden" name="token" value=${(nickname == game.yellowPlayerNickname) ? string(game.yellowToken, game.redToken)}>
+        <input type="hidden" name="token" value=${(nickname == game.yellowPlayerNickname) ? string(game.yellowUuid, game.redUuid)}>
         <input type="hidden" name="id" value=${game.id}>
         <input type="submit" class="cheat" value="Cheat">
     </form>

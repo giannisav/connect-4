@@ -5,21 +5,21 @@ public class GameResponseDTO {
     private Long id;
     private String nextMoveNickname;
     private String yellowPlayerNickname;
-    private String yellowToken;
+    private String yellowUuid;
     private String redPlayerNickname;
-    private String redToken;
+    private String redUuid;
     private char[][] board;
     private String gameState;
 
     public GameResponseDTO() {}
 
-    public GameResponseDTO(Long id, String nextMoveNickname, String yellowPlayerNickname, String yellowToken, String redPlayerNickname, String redToken, char[][] board, String gameState) {
+    public GameResponseDTO(Long id, String nextMoveNickname, String yellowPlayerNickname, String yellowUuid, String redPlayerNickname, String redUuid, char[][] board, String gameState) {
         this.id = id;
         this.nextMoveNickname = nextMoveNickname;
         this.yellowPlayerNickname = yellowPlayerNickname;
-        this.yellowToken = yellowToken;
+        this.yellowUuid = yellowUuid;
         this.redPlayerNickname = redPlayerNickname;
-        this.redToken = redToken;
+        this.redUuid = redUuid;
         this.board = board;
         this.gameState = gameState;
     }
@@ -44,17 +44,17 @@ public class GameResponseDTO {
 
     public void setYellowPlayerNickname(String yellowPlayerNickname) { this.yellowPlayerNickname = yellowPlayerNickname; }
 
-    public String getYellowToken() { return yellowToken; }
+    public String getYellowUuid() { return yellowUuid; }
 
-    public void setYellowToken(String yellowToken) { this.yellowToken = yellowToken; }
+    public void setYellowUuid(String yellowUuid) { this.yellowUuid = yellowUuid; }
 
     public String getRedPlayerNickname() { return redPlayerNickname; }
 
     public void setRedPlayerNickname(String redPlayerNickname) { this.redPlayerNickname = redPlayerNickname; }
 
-    public String getRedToken() { return redToken; }
+    public String getRedUuid() { return redUuid; }
 
-    public void setRedToken(String redToken) { this.redToken = redToken; }
+    public void setRedUuid(String redUuid) { this.redUuid = redUuid; }
 
     public char[][] getBoard() {
         return board;

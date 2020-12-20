@@ -25,8 +25,8 @@ public class Player {
 
     private Long draws;
 
-    @Column(name = "token", unique = true)
-    private String fakeToken;
+    @Column(name = "uuid", unique = true)
+    private String uuid;
 
     public Player (){}
 
@@ -39,7 +39,7 @@ public class Player {
         this.draws = draws;
     }
 
-    public Player(Long id, String nickname, Long points, Long gamesPlayed, Long wins, Long loses, Long draws, String fakeToken) {
+    public Player(Long id, String nickname, Long points, Long gamesPlayed, Long wins, Long loses, Long draws, String uuid) {
         this.id = id;
         this.nickname = nickname;
         this.points = points;
@@ -47,7 +47,7 @@ public class Player {
         this.wins = wins;
         this.loses = loses;
         this.draws = draws;
-        this.fakeToken = fakeToken;
+        this.uuid = uuid;
     }
 
     public Long getId() {
@@ -106,7 +106,7 @@ public class Player {
         this.draws = draws;
     }
 
-    public String getFakeToken() { return fakeToken; }
+    public String getUuid() { return uuid; }
 
-    public void setFakeToken(String fakeToken) { this.fakeToken = fakeToken; }
+    public void setUuid(String uuid) { this.uuid = uuid; }
 }

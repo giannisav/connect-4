@@ -1,4 +1,4 @@
-package com.ihu.Connect_4.controllers;
+package com.ihu.Connect_4.controllers_rest;
 
 import com.ihu.Connect_4.dtos.PlayerDTO;
 import com.ihu.Connect_4.enums.SortingOrder;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/connect4/players")
+@RequestMapping("/api/players")
 public class PlayerController {
 
     private final PlayerService playerService;
@@ -19,8 +19,8 @@ public class PlayerController {
         this.playerService = playerService;
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<PlayerDTO> savePlayer(@RequestParam("nickname") String nickname) {
+    @PostMapping("/register/{nickname}")
+    public ResponseEntity<PlayerDTO> savePlayer(@PathVariable("nickname") String nickname) {
         return ResponseEntity.ok().body(playerService.savePlayer(nickname));
     }
 

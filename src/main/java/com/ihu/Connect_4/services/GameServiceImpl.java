@@ -36,7 +36,7 @@ public class GameServiceImpl implements GameService {
     public GameResponseDTO createGame(String nickname) {
         Player player = validatePlayerExists(nickname);
         Game game = new Game();
-        player.setFakeToken(UUID.randomUUID().toString());
+        player.setUuid(UUID.randomUUID().toString());
         game.setYellowPlayer(player);
         game.setNextMoveNickname("Waiting the opponent to connect");
         game.setBoardMoves("");
@@ -54,7 +54,7 @@ public class GameServiceImpl implements GameService {
         if(null != game.getYellowPlayer() && null != game.getRedPlayer()) {
             throw new FullGameException("Sorry this game is full");
         }
-        player.setFakeToken(UUID.randomUUID().toString());
+        player.setUuid(UUID.randomUUID().toString());
         game.setNextMoveNickname(game.getYellowPlayer().getNickname());
         game.setRedPlayer(player);
         game.setGameState(GameState.RUNNING);
@@ -63,9 +63,9 @@ public class GameServiceImpl implements GameService {
 
     @Transactional
     @Override
-    public GameResponseDTO play(String nickname,String token, Long id, Integer column) {
+    public GameResponseDTO play(String nickname,String uuid, Long id, Integer column) {
         Game game = validateGameExists(id);
-        checkRules(nickname, token, game, column);
+        checkRules(nickname, uuid, game, column);
         if(boardUtil.moveIsWinning(game.getBoardMoves(), column)) {
             return gameHasWinner(game, nickname, column);
         }
@@ -83,17 +83,17 @@ public class GameServiceImpl implements GameService {
     public GameResponseDTO getGameStatus(String nickname, Long id) {
         Game game = validateGameExists(id);
         if(!(game.getYellowPlayer().getNickname().equals(nickname) || game.getRedPlayer().getNickname().equals(nickname))) {
-            throw new UnauthorizedPlayerException("You are not authorized to play to this game");
+            throw new UnauthorizedPlayerException("You are not authorized to watch this game");
         }
         return mapper.mapToGameResponseDTO(game);
     }
 
     @Transactional
     @Override
-    public GameResponseDTO cheatPlay(String nickname, String token, Long id) {
+    public GameResponseDTO cheatPlay(String nickname, String uuid, Long id) {
         Game game = validateGameExists(id);
         Integer bestValidColumn = cheatService.getBestMove(game.getBoardMoves());
-        return play(nickname, token, id, bestValidColumn);
+        return play(nickname, uuid, id, bestValidColumn);
     }
 
     private GameResponseDTO gameHasWinner(Game game, String nickname, Integer column) {
@@ -126,7 +126,7 @@ public class GameServiceImpl implements GameService {
         if(!(game.getYellowPlayer().getNickname().equals(nickname) || game.getRedPlayer().getNickname().equals(nickname))) {
             throw new UnauthorizedPlayerException("You are not authorized to play to this game");
         }
-        if(!player.getFakeToken().equals(token)) {
+        if(!player.getUuid().equals(token)) {
             throw new UnauthorizedPlayerException("Not authenticated as " + nickname);
         }
         if(game.getGameState()!= GameState.RUNNING) {

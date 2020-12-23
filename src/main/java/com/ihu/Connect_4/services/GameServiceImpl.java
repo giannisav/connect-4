@@ -38,7 +38,7 @@ public class GameServiceImpl implements GameService {
         Game game = new Game();
         player.setUuid(UUID.randomUUID().toString());
         game.setYellowPlayer(player);
-        game.setNextMoveNickname("Waiting the opponent to connect");
+        game.setNextMoveNickname("Wait your opponent to connect");
         game.setBoardMoves("");
         return mapper.mapToGameResponseDTO(repository.save(game));
     }
@@ -130,13 +130,13 @@ public class GameServiceImpl implements GameService {
             throw new UnauthorizedPlayerException("Not authenticated as " + nickname);
         }
         if(game.getGameState()!= GameState.RUNNING) {
-            throw new InvalidTurnPlayException("Its not your turn to play");
+            throw new InvalidTurnPlayException("Hmmm, you dont have opponent or the game has winner");
         }
         if(!game.getNextMoveNickname().equals(nickname)) {
             throw new InvalidTurnPlayException("Its not your turn! Wait your opponent to play");
         }
         if(boardUtil.moveIsInvalid(game.getBoardMoves(), column)) {
-            throw new InvalidMoveException("Invalid move! Please choose another");
+            throw new InvalidMoveException("Invalid move! Please choose another column");
         }
     }
 

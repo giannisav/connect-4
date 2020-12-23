@@ -35,14 +35,15 @@
         }
 
         form {
-            width: 400px;
+            width: 150px;
             margin: 50px auto;
         }
 
         input[type="text"] {
             display: block;
-            width: 400px;
+            width: 170px;
             margin: 0 0 20px;
+            text-align: center;
             padding: 8px 12px 10px 12px;
             border: 1px solid rgba(0,0,0,.5);
             background: rgba(0,0,0,.25);
@@ -50,7 +51,7 @@
 
         input[type="submit"] {
             display: block;
-            width: 150px;
+            width: 170px;
             margin: 0 0 20px;
             padding: 8px 0 10px 0;
             text-align: center;
@@ -59,24 +60,40 @@
         }
 
         .cheat{
-            visibility: visible;
+            width: 45px;
+            color: transparent;
+            background-color: transparent !important;
+            border: 1px solid transparent !important;
         }
 
         .cheat:hover {
-            visibility: visible;
+            width: 45px;
+            color: #b5c91a;
         }
 
         .game {
+            position: relative;
+            margin-top: 10px;
+            margin-bottom: 5px;
             display: flex;
             align-items: flex-start;
             width: 100vw;
-            justify-content: space-between;
+            justify-content: center;
+        }
+
+        .forms {
+            margin-top: 50px;
+            margin-left: 20px;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            font-family: Lucida Console, Courier New, monospace;
         }
 
         #board {
             position: relative;
-            width: 800px;
-            height: 800px;
+            width: 70vh;
+            height: 70vh;
             border-radius: 10px;
             background: linear-gradient(0.25turn, #050505, #171717, #000000);
             display: flex;
@@ -94,34 +111,54 @@
 
         .circle {
             background-color: #333;
-            box-shadow: 5px 5px 5px rgba(105, 105, 105, 0.3);
-            width: 90px;
-            height: 90px;
+            box-shadow: 3px 3px 3px rgba(105, 105, 105, 0.3);
+            width: 8vh;
+            height: 8vh;
             border-radius: 100%;
         }
 
         .yellow {
-            background: repeating-radial-gradient(#d7fc03, #acc902 58%);
+            background: repeating-radial-gradient(#ffda2d, #cca800 58%);
         }
 
         .red {
-            background: repeating-radial-gradient(#fc036b, #b00049 58%);
+            background: repeating-radial-gradient(#d9344a, #b00049 58%);
         }
 
-        #gameEndBoard {
+        #board-end {
             position: relative;
-            width: 800px;
-            height: 800px;
+            width: 70vh;
+            height: 70vh;
             border-radius: 10px;
             display: flex;
             flex-direction: column;
-            animation: animateBg 2s infinite linear;
-            background-size: 300% 100%;
-            background: linear-gradient(0.25turn, #da3287, #ffde5e, #da3287);
+            background: linear-gradient(55deg, #0d0d0d, ${(game.nextMoveNickname?ends_with(game.yellowPlayerNickname)) ?string('#e3c229', '#b52a3c')});
+            background-size: 600% 600%;
+
+            -webkit-animation: end 1s ease infinite;
+            -moz-animation: end 10s ease infinite;
+            animation: end 10s ease infinite;
+        }
+
+        @-webkit-keyframes end {
+            0%{background-position:0% 97%}
+            50%{background-position:100% 4%}
+            100%{background-position:0% 97%}
+        }
+        @-moz-keyframes end {
+            0%{background-position:0% 97%}
+            50%{background-position:100% 4%}
+            100%{background-position:0% 97%}
+        }
+        @keyframes end {
+            0%{background-position:0% 97%}
+            50%{background-position:100% 4%}
+            100%{background-position:0% 97%}
         }
 
         .table {
-            font-family: arial, sans-serif;
+            margin-top: 15px;
+            font-family: Lucida Console, Courier New, monospace;
             border-collapse: collapse;
             table-layout: fixed;
             width: 100%;
@@ -134,19 +171,13 @@
             text-align: center;
             padding: 8px;
         }
-
-        .tooltip:hover {
-            content: "Somewhere here there is one hidden cheat button that plays for you the best move. If you find it, dont spam clicks, it needs some time to think it";
-            display: block;
-            position: relative;
-            top: -16px;
-            right: -16px;
-            width: 100px;
-        }
     </style>
     <title>Connect 4</title>
 </head>
 <body>
+
+<#include "parts/navbar.ftl">
+
 <#function board char>
         <#if char == "R">
             <#return "circle red"/>
@@ -158,26 +189,26 @@
 </#function>
 <#function state state>
     <#if state == "FINISHED">
-        <#return "gameEndBoard"/>
+        <#return "board-end"/>
     <#else>
         <#return "board"/>
     </#if>
 </#function>
-<#include "./parts/navbar.ftl">
+
 <table class="table">
     <tr>
         <th>Game Id</th>
-        <th>Yellow Player</th>
-        <th>Red Player</th>
-        <th>Game State</th>
+        <th style="color:#ffda2d">Yellow Player</th>
         <th>Next turn</th>
+        <th style="color:#d9344a">Red Player</th>
+        <th>Game State</th>
     </tr>
     <tr>
         <td>${game.id}</td>
-        <td>${game.yellowPlayerNickname}</td>
-        <td>${game.redPlayerNickname}</td>
-        <td>${game.gameState}</td>
+        <td style="color:#ffda2d">${game.yellowPlayerNickname}</td>
         <td>${game.nextMoveNickname}</td>
+        <td style="color:#d9344a">${game.redPlayerNickname}</td>
+        <td>${game.gameState}</td>
     </tr>
 </table>
 <section class="game">
@@ -194,22 +225,27 @@
         </div>
         </#list>
     </div>
-    <form action="/play" method="post">
-        <input type="hidden" name="nickname" value=${nickname}>
-        <input type="hidden" name="token" value=${(nickname == game.yellowPlayerNickname) ? then (game.yellowUuid, game.redUuid)}>
-        <input type="hidden" name="id" value=${game.id}>
-        <input type="text" name="column" placeholder="choose column">
-        <input type="submit" value="Play" />
-    </form>
-    <form action="/board/${nickname}/${game.id}" method="get">
-        <input type="submit" value="Get opponent's move">
-    </form>
-    <form action="/cheat" method="post">
-        <input type="hidden" name="nickname" value=${nickname}>
-        <input type="hidden" name="token" value=${(nickname == game.yellowPlayerNickname) ? string(game.yellowUuid, game.redUuid)}>
-        <input type="hidden" name="id" value=${game.id}>
-        <input type="submit" class="cheat" value="Cheat">
-    </form>
+    <div class="forms">
+        <form action="/play" method="post">
+            <input type="hidden" name="nickname" value=${nickname}>
+            <input type="hidden" name="token" value=${(nickname == game.yellowPlayerNickname) ? then (game.yellowUuid, game.redUuid)}>
+            <input type="hidden" name="id" value=${game.id}>
+            <input type="text" name="column" placeholder="choose column">
+            <input type="submit" value="Play" />
+        </form>
+        <form action="/board" method="get">
+            <input type="hidden" name="nickname" value=${nickname}>
+            <input type="hidden" name="id" value=${game.id}>
+            <input type="submit" value="See opponent's move">
+        </form>
+        <form action="/cheat" method="post">
+            <input type="hidden" name="nickname" value=${nickname}>
+            <input type="hidden" name="token" value=${(nickname == game.yellowPlayerNickname) ? string(game.yellowUuid, game.redUuid)}>
+            <input type="hidden" name="id" value=${game.id}>
+            <input type="submit" class="cheat" value="Cheat">
+        </form>
+    </div>
+    <#include "./parts/detectiveInfo.ftl">
 </section>
 </body>
 <#include "./parts/footer.ftl">

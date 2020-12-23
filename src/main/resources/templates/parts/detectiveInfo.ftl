@@ -2,9 +2,10 @@
     <style>
 
         .tooltip {
-            position: relative;
+            position: absolute;
+            bottom: 5px;
+            left: 0;
             display: inline-block;
-            border-bottom: 1px dotted black;
         }
 
         .tooltip .tooltiptext {
@@ -33,5 +34,5 @@
 
 <div class="tooltip">
     <img class="icon" src="detective.png" alt="Detective info">
-    <span class="tooltiptext">Somewhere here there is one hidden cheat button that plays the best move for you. If you find it, dont spam clicks, it needs some time to think it</span>
+    <span class="tooltiptext">Somewhere in the page there is one hidden cheat button that plays the best move for you. If you find it, dont spam clicks, it needs some time to think it</span>
 </div>

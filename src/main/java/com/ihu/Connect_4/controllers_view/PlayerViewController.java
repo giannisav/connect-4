@@ -11,12 +11,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
 import java.util.List;
 
 @Controller
 public class PlayerViewController {
-
 
     private final PlayerService playerService;
 
@@ -36,12 +34,12 @@ public class PlayerViewController {
                                  @RequestParam(value = "sortingOrder", required = false) SortingOrder sortingOrder) {
         List<PlayerDTO> players = playerService.getPlayerStatistics(sortingType, sortingOrder);
         model.addAttribute("players", players);
-        return "/statistics";
+        return "statistics";
     }
 
     @PostMapping("/register")
     public String registerPlayer(@ModelAttribute(name = "nickname") String nickname) {
         playerService.savePlayer(nickname);
-        return "redirect:/";
+        return "index";
     }
 }

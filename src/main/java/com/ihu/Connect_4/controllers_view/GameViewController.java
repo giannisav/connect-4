@@ -1,25 +1,18 @@
 package com.ihu.Connect_4.controllers_view;
 
-
 import com.ihu.Connect_4.dtos.GameResponseDTO;
 import com.ihu.Connect_4.services.GameService;
-import com.ihu.Connect_4.services.PlayerService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
-
 
 @Controller
 public class GameViewController {
 
     private final GameService gameService;
-    private final PlayerService playerService;
 
-    public GameViewController(GameService gameService, PlayerService playerService) {
+    public GameViewController(GameService gameService) {
         this.gameService = gameService;
-        this.playerService = playerService;
     }
 
     @GetMapping({"/"})
@@ -40,50 +33,57 @@ public class GameViewController {
         return "joinPage";
     }
 
-    @GetMapping("/board/{nickname}/{id}")
-    public String getGameState(@PathVariable("nickname") String nickname,
-                               @PathVariable("id") Long id, Model model) {
+    @GetMapping("/board")
+    public String getGameState(@ModelAttribute("nickname") String nickname,
+                               @ModelAttribute("id") Long id,
+                               Model model) {
         GameResponseDTO game = gameService.getGameStatus(nickname, id);
         model.addAttribute("game", game);
-        return "/board";
+        return "board";
     }
 
     @PostMapping("/create")
-    public String createGame(@ModelAttribute(name = "nickname") String nickname) {
+    public String createGame(@ModelAttribute(name = "nickname") String nickname,
+                             Model model) {
         GameResponseDTO game = gameService.createGame(nickname);
-        return "redirect:/board/" + nickname + "/" + game.getId();
+        model.addAttribute("game",game);
+        return "board";
     }
 
     @PostMapping("/join")
     public String joinGame(@ModelAttribute(name = "nickname") String nickname,
-                           @ModelAttribute(name = "id") String id) {
+                           @ModelAttribute(name = "id") String id,
+                           Model model) {
         GameResponseDTO game = gameService.joinGame(nickname, Long.parseLong(id));
-        return "redirect:/board/" + game.getRedPlayerNickname() + "/" + game.getId();
+        model.addAttribute("game",game);
+        return "board";
     }
 
     @PostMapping("/play")
     public String play(@ModelAttribute(name = "nickname") String nickname,
                        @ModelAttribute(name = "token") String token,
                        @ModelAttribute(name = "id") String id,
-                       @ModelAttribute(name="column") String column) {
-        gameService.play(nickname, token, Long.parseLong(id), Integer.parseInt(column));
-        return "redirect:/board/" + nickname + "/" + id;
+                       @ModelAttribute(name="column") String column,
+                       Model model) {
+        GameResponseDTO game = gameService.play(nickname, token, Long.parseLong(id), Integer.parseInt(column));
+        model.addAttribute("game", game);
+        return "board";
     }
 
     @PostMapping("/cheat")
     public String cheat(@ModelAttribute(name = "nickname") String nickname,
                         @ModelAttribute(name = "token") String token,
-                        @ModelAttribute(name = "id") String id) {
-        gameService.cheatPlay(nickname, token, Long.parseLong(id));
-        return "redirect:/board/" + nickname + "/" + id;
+                        @ModelAttribute(name = "id") String id,
+                        Model model) {
+        GameResponseDTO game = gameService.cheatPlay(nickname, token, Long.parseLong(id));
+        model.addAttribute("game", game);
+        return "board";
     }
 
     @ExceptionHandler(Exception.class)
-    public String error(Exception ex, HttpServletRequest request, Model model) {
-        model.addAttribute("url", request.getRequestURL());
+    public String error(Exception ex, Model model) {
         model.addAttribute("message", ex.getMessage());
-        return "/error";
+        return "error";
     }
-
 
 }

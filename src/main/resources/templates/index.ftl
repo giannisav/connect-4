@@ -6,22 +6,22 @@
 <style>
 
     .welcome {
-        align-content: center;
-        margin-top: 100px;
-        margin-left: auto;
-        margin-right: auto;
-        margin-bottom: 100px;
-        width: 35%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 100px auto;
         padding: 10px;
         background-color: #333;
-        transform: skewY(-15deg);
     }
 
     h1{
-        font-size: 100px;
+        font-size: 70px;
         background: -webkit-linear-gradient(35deg, #dec71b, #b5c91a, #8c9e10);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+        transform: skewY(-15deg);
+        text-align: center;
+        font-family: Lucida Console, Courier New, monospace;
     }
 
 </style>
@@ -30,7 +30,6 @@
 <div class="welcome">
     <h1>Lets play Connect 4</h1>
 </div>
-<#include "./parts/detectiveInfo.ftl">
 </body>
 <#include "parts/footer.ftl">
 </html>

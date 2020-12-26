@@ -34,11 +34,6 @@
             resize: none;
         }
 
-        form {
-            width: 150px;
-            margin: 50px auto;
-        }
-
         input[type="text"] {
             display: block;
             width: 170px;
@@ -82,11 +77,13 @@
         }
 
         .forms {
+            width: 150px;
             margin-top: 50px;
             margin-left: 20px;
             display: flex;
             justify-content: center;
             flex-direction: column;
+            max-height: 70vh !important;
             font-family: Lucida Console, Courier New, monospace;
         }
 
@@ -111,7 +108,7 @@
 
         .circle {
             background-color: #333;
-            box-shadow: 3px 3px 3px rgba(105, 105, 105, 0.3);
+            box-shadow: 2px 2px 2px rgba(105, 105, 105, 0.3);
             width: 8vh;
             height: 8vh;
             border-radius: 100%;
@@ -119,20 +116,32 @@
 
         .yellow {
             background: repeating-radial-gradient(#ffda2d, #cca800 58%);
+            box-shadow: 0 0 0;
         }
 
         .red {
             background: repeating-radial-gradient(#d9344a, #b00049 58%);
+            box-shadow: 0 0 0;
         }
 
         #board-end {
+            <#function winner char>
+                <#if char?ends_with(game.yellowPlayerNickname)>
+                    <#return '#e3c229'/>
+                <#elseif char?ends_with(game.redPlayerNickname)>
+                    <#return '#b52a3c'/>
+                <#else>
+                    <#return '#333333'/>
+                </#if>
+            </#function>
+
             position: relative;
             width: 70vh;
             height: 70vh;
             border-radius: 10px;
             display: flex;
             flex-direction: column;
-            background: linear-gradient(55deg, #0d0d0d, ${(game.nextMoveNickname?ends_with(game.yellowPlayerNickname)) ?string('#e3c229', '#b52a3c')});
+            background: linear-gradient(55deg, #0d0d0d, ${winner(game.nextMoveNickname)});
             background-size: 600% 600%;
 
             -webkit-animation: end 1s ease infinite;
@@ -141,19 +150,19 @@
         }
 
         @-webkit-keyframes end {
-            0%{background-position:0% 97%}
+            0%{background-position:0 97%}
             50%{background-position:100% 4%}
-            100%{background-position:0% 97%}
+            100%{background-position:0 97%}
         }
         @-moz-keyframes end {
-            0%{background-position:0% 97%}
+            0%{background-position:0 97%}
             50%{background-position:100% 4%}
-            100%{background-position:0% 97%}
+            100%{background-position:0 97%}
         }
         @keyframes end {
-            0%{background-position:0% 97%}
+            0%{background-position:0 97%}
             50%{background-position:100% 4%}
-            100%{background-position:0% 97%}
+            100%{background-position:0 97%}
         }
 
         .table {
@@ -215,30 +224,29 @@
     <div id="${state(game.gameState)}">
         <#list game.board as row>
         <div class="row">
-            <div class="${board(row[0])}"></div>
-            <div class="${board(row[1])}"></div>
-            <div class="${board(row[2])}"></div>
-            <div class="${board(row[3])}"></div>
-            <div class="${board(row[4])}"></div>
-            <div class="${board(row[5])}"></div>
-            <div class="${board(row[6])}"></div>
+            <div class="${board(row[0])} 1"></div>
+            <div class="${board(row[1])} 2"></div>
+            <div class="${board(row[2])} 3"></div>
+            <div class="${board(row[3])} 4"></div>
+            <div class="${board(row[4])} 5"></div>
+            <div class="${board(row[5])} 6"></div>
+            <div class="${board(row[6])} 7"></div>
         </div>
         </#list>
     </div>
     <div class="forms">
-        <form action="/play" method="post">
+        <form id="play" action="/play" method="post">
             <input type="hidden" name="nickname" value=${nickname}>
             <input type="hidden" name="token" value=${(nickname == game.yellowPlayerNickname) ? then (game.yellowUuid, game.redUuid)}>
             <input type="hidden" name="id" value=${game.id}>
-            <input type="text" name="column" placeholder="choose column">
-            <input type="submit" value="Play" />
+            <input  id="column" type="hidden" name="column" placeholder="choose column">
         </form>
         <form action="/board" method="get">
             <input type="hidden" name="nickname" value=${nickname}>
             <input type="hidden" name="id" value=${game.id}>
             <input type="submit" value="See opponent's move">
         </form>
-        <form action="/cheat" method="post">
+        <form style="margin-top: 20vh" action="/cheat" method="post">
             <input type="hidden" name="nickname" value=${nickname}>
             <input type="hidden" name="token" value=${(nickname == game.yellowPlayerNickname) ? string(game.yellowUuid, game.redUuid)}>
             <input type="hidden" name="id" value=${game.id}>
@@ -249,4 +257,12 @@
 </section>
 </body>
 <#include "./parts/footer.ftl">
+<script>
+    document.getElementById("board").addEventListener("click", (e) => {
+        if (e.target.classList.contains("circle") && e.target.classList[1].length === 1) {
+            document.getElementById("column").value = e.target.classList[1];
+            document.getElementById("play").submit();
+        }
+    });
+</script>
 </html>

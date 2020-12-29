@@ -10,9 +10,7 @@
     }
 
     .container {
-        margin-top: 3%;
-        margin-right: auto;
-        margin-left: auto;
+        margin: 3% auto;
         border: 3px solid #8c9e10;
         background-color: #333;
         width: 80%;
@@ -54,7 +52,6 @@
         background-color: #3b3b3b;
     }
 
-
     .floated {
         color: #8c9e10;
         float: left;
@@ -63,15 +60,6 @@
         border: 1px solid rgba(0,0,0,.5);
         background: rgba(0,0,0,.25);
         padding: 4px 0 5px 0;
-    }
-
-    input[type="hidden"] {
-        display: flex;
-        width: 400px;
-        margin: 0 0 20px;
-        padding: 8px 12px 10px 12px;
-        border: 1px solid rgba(0,0,0,.5);
-        background: rgba(0,0,0,.25);
     }
 
 </style>
@@ -86,9 +74,9 @@
             <table>
                 <thead>
                     <tr>
-                    <th class="th-di" >Nickname
+                    <th>Nickname
                     </th>
-                    <th class="th-di">Points
+                    <th>Points
                         <form method="GET" action="/statistics">
                             <input type="hidden" name="sortingType" value="points"/>
                             <input type="hidden" name="sortingOrder" value="asc"/>
@@ -100,7 +88,7 @@
                             <input class="floated" type="submit" value="&#x25BC;"/>
                         </form>
                     </th>
-                    <th class="th-di">Games Played
+                    <th>Games Played
                         <form method="GET" action="/statistics">
                             <input type="hidden" name="sortingType" value="games_played"/>
                             <input type="hidden" name="sortingOrder" value="asc"/>
@@ -112,7 +100,7 @@
                             <input class="floated" type="submit" value="&#x25BC;"/>
                         </form>
                     </th>
-                    <th class="th-di">Wins
+                    <th>Wins
                         <form method="GET" action="/statistics">
                             <input type="hidden" name="sortingType" value="wins"/>
                             <input type="hidden" name="sortingOrder" value="asc"/>
@@ -124,7 +112,7 @@
                             <input class="floated" type="submit" value="&#x25BC;"/>
                         </form>
                     </th>
-                    <th class="th-di">Loses
+                    <th>Loses
                         <form method="GET" action="/statistics">
                             <input type="hidden" name="sortingType" value="loses"/>
                             <input type="hidden" name="sortingOrder" value="asc"/>
@@ -136,7 +124,7 @@
                             <input class="floated" type="submit" value="&#x25BC;"/>
                         </form>
                     </th>
-                    <th class="th-di">Draws
+                    <th>Draws
                         <form method="GET" action="/statistics">
                             <input type="hidden" name="sortingType" value="draws"/>
                             <input type="hidden" name="sortingOrder" value="asc"/>

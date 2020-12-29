@@ -12,7 +12,9 @@ import com.ihu.Connect_4.utils.BoardUtil;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class GameServiceImpl implements GameService {
@@ -94,6 +96,14 @@ public class GameServiceImpl implements GameService {
         Game game = validateGameExists(id);
         Integer bestValidColumn = cheatService.getBestMove(game.getBoardMoves());
         return play(nickname, uuid, id, bestValidColumn);
+    }
+
+    @Override
+    public List<GameResponseDTO> findAvailableGames() {
+        return repository.findAllByGameStateEquals(GameState.CREATED)
+                .stream()
+                .map(game -> mapper.mapToGameResponseDTO(game))
+                .collect(Collectors.toList());
     }
 
     private GameResponseDTO gameHasWinner(Game game, String nickname, Integer column) {

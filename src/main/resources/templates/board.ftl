@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -170,7 +169,9 @@
             font-family: Lucida Console, Courier New, monospace;
             border-collapse: collapse;
             table-layout: fixed;
-            width: 100%;
+            width: 85%;
+            margin-left: auto;
+            margin-right: auto;
             padding-top: 20%;
         }
 
@@ -206,18 +207,16 @@
 
 <table class="table">
     <tr>
-        <th>Game Id</th>
         <th style="color:#ffda2d">Yellow Player</th>
         <th>Next turn</th>
-        <th style="color:#d9344a">Red Player</th>
         <th>Game State</th>
+        <th style="color:#d9344a">Red Player</th>
     </tr>
     <tr>
-        <td>${game.id}</td>
         <td style="color:#ffda2d">${game.yellowPlayerNickname}</td>
         <td>${game.nextMoveNickname}</td>
+        <td>${game.gameState?lower_case}</td>
         <td style="color:#d9344a">${game.redPlayerNickname}</td>
-        <td>${game.gameState}</td>
     </tr>
 </table>
 <section class="game">

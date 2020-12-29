@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/games")
 public class GameController {
@@ -36,6 +38,11 @@ public class GameController {
     @GetMapping("/{nickname}/{id}")
     public ResponseEntity<GameResponseDTO> getGame(@PathVariable("nickname") String nickname, @PathVariable("id") Long id) {
         return ResponseEntity.ok().body(gameService.getGameStatus(nickname, id));
+    }
+
+    @GetMapping()
+    public ResponseEntity<List<GameResponseDTO>> findAvailableGames() {
+        return ResponseEntity.ok(gameService.findAvailableGames());
     }
 
     @PostMapping("/cheat/{nickname}/{uuid}/{id}/")

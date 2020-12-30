@@ -12,6 +12,8 @@ import com.ihu.Connect_4.utils.BoardUtil;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -100,8 +102,10 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public List<GameResponseDTO> findAvailableGames() {
+        LocalDateTime now = LocalDateTime.now();
         return repository.findAllByGameStateEquals(GameState.CREATED)
                 .stream()
+                .filter(game -> Math.abs(Duration.between(now, game.getCreatedAt()).toMinutes()) <= 7)
                 .map(game -> mapper.mapToGameResponseDTO(game))
                 .collect(Collectors.toList());
     }

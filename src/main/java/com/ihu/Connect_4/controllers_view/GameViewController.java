@@ -1,9 +1,6 @@
 package com.ihu.Connect_4.controllers_view;
 
 import com.ihu.Connect_4.dtos.GameResponseDTO;
-import com.ihu.Connect_4.dtos.PlayerDTO;
-import com.ihu.Connect_4.enums.SortingOrder;
-import com.ihu.Connect_4.enums.SortingType;
 import com.ihu.Connect_4.services.GameService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

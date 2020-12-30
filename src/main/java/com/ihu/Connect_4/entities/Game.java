@@ -3,6 +3,7 @@ package com.ihu.Connect_4.entities;
 import com.ihu.Connect_4.enums.GameState;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "game")
@@ -25,10 +26,16 @@ public class Game {
     @Enumerated(EnumType.STRING)
     private GameState gameState ;
 
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
     @PrePersist
     public void onPrePersist() {
         if (gameState == null) {
             gameState = GameState.CREATED;
+        }
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
         }
     }
 
@@ -90,4 +97,8 @@ public class Game {
     public void setGameState(GameState gameState) {
         this.gameState = gameState;
     }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }

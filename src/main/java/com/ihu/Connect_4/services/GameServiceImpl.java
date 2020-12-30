@@ -105,7 +105,7 @@ public class GameServiceImpl implements GameService {
         LocalDateTime now = LocalDateTime.now();
         return repository.findAllByGameStateEquals(GameState.CREATED)
                 .stream()
-                .filter(game -> Math.abs(Duration.between(now, game.getCreatedAt()).toMinutes()) <= 7)
+                .filter(game -> Math.abs(Duration.between(now, game.getCreatedAt()).toMinutes()) <= 10)
                 .map(game -> mapper.mapToGameResponseDTO(game))
                 .collect(Collectors.toList());
     }

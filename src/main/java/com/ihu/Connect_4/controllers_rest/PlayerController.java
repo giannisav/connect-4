@@ -19,7 +19,7 @@ public class PlayerController {
         this.playerService = playerService;
     }
 
-    @PostMapping("/register/{nickname}")
+    @PostMapping("/{nickname}")
     public ResponseEntity<PlayerDTO> savePlayer(@PathVariable("nickname") String nickname) {
         return ResponseEntity.ok().body(playerService.savePlayer(nickname));
     }

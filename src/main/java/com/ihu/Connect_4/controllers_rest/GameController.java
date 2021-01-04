@@ -19,7 +19,7 @@ public class GameController {
         this.gameService = gameService;
     }
 
-    @PostMapping("/create/{nickname}")
+    @PostMapping("/{nickname}")
     public ResponseEntity<GameResponseDTO> createGame(@PathVariable("nickname") String nickname) {
         return ResponseEntity.ok().body(gameService.createGame(nickname));
     }

@@ -17,7 +17,7 @@ public class ScheduledTasks {
         this.repository = repository;
     }
 
-    @Scheduled(cron = "0 0 4 * * ?", zone = "Europe/Athens")
+    @Scheduled(cron = "30 4 * * *", zone = "Europe/Athens")
     public void clearOldEmptyGames(){
         LocalDateTime now = LocalDateTime.now();
         repository.findAllByGameStateEquals(GameState.CREATED)

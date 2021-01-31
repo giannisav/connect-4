@@ -7,10 +7,8 @@ import com.ihu.Connect_4.services.GameService;
 import com.ihu.Connect_4.services.PlayerService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @Controller
@@ -41,5 +39,11 @@ public class PlayerViewController {
     public String registerPlayer(@ModelAttribute(name = "nickname") String nickname) {
         playerService.savePlayer(nickname);
         return "index";
+    }
+
+    @ExceptionHandler(Exception.class)
+    public String error(Exception ex, Model model) {
+        model.addAttribute("message", ex.getMessage());
+        return "error";
     }
 }

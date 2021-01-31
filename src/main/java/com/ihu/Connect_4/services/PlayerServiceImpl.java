@@ -4,12 +4,16 @@ import com.ihu.Connect_4.dtos.PlayerDTO;
 import com.ihu.Connect_4.entities.Player;
 import com.ihu.Connect_4.enums.SortingOrder;
 import com.ihu.Connect_4.enums.SortingType;
+import com.ihu.Connect_4.exceptions.UnauthorizedPlayerException;
+import com.ihu.Connect_4.exceptions.XssException;
 import com.ihu.Connect_4.mappers.PlayerMapper;
 import com.ihu.Connect_4.repositories.PlayerRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.HtmlUtils;
 
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,6 +28,7 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     public PlayerDTO savePlayer(String nickname) {
+        avoidXSS(nickname);
         Player player = repository.findByNickname(nickname).orElse(new Player(nickname, 1000L, 0L, 0L, 0L, 0L));
         return mapper.mapToPlayerDTO(repository.save(player));
     }
@@ -41,5 +46,11 @@ public class PlayerServiceImpl implements PlayerService {
                 .stream()
                 .map(player -> mapper.mapToPlayerDTO(player))
                 .collect(Collectors.toList());
+    }
+
+    private void avoidXSS(String input) {
+        if (input != null && !input.equals(HtmlUtils.htmlEscape(input))) {
+            throw new XssException("Not allowed nickname.");
+        }
     }
 }

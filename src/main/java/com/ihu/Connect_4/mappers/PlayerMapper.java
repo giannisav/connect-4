@@ -4,6 +4,9 @@ import com.ihu.Connect_4.dtos.PlayerDTO;
 import com.ihu.Connect_4.entities.Player;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Component
 public class PlayerMapper {
 
@@ -16,5 +19,12 @@ public class PlayerMapper {
         playerDTO.setLoses(player.getLoses());
         playerDTO.setDraws(player.getDraws());
         return playerDTO;
+    }
+
+    public List<PlayerDTO> mapToPlayerDTOList(List<Player> playerList) {
+        return playerList
+                .stream()
+                .map(this::mapToPlayerDTO)
+                .collect(Collectors.toList());
     }
 }

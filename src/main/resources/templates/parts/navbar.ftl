@@ -7,7 +7,7 @@
     <section class="navright">
       <a href="/register">
         <div class="nav-wrap">
-          <img class="navmenu" src="register.png" alt="Register" alt="Register">
+          <img class="navmenu" src="register.png" alt="Register">
           <p>Register</p>
         </div>
       </a>

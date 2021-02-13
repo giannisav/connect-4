@@ -61,6 +61,51 @@
         background: rgba(0,0,0,.25);
         padding: 4px 0 5px 0;
     }
+    .resultContainer {
+        margin: 3% auto;
+        border: 3px solid #8c9e10;
+        background-color: #333;
+        width: 80%;
+        padding: 14px;
+        overflow: auto;
+        align-content: center;
+        align-items: center;
+        text-align: center;
+        display: flex;
+    }
+    .minContainer {
+        margin: auto;
+        display: flex;
+        justify-content: center;
+    }
+    .resultNav {
+        min-width: 150px;
+        padding: 8px 0 10px 0;
+        text-align: center;
+        border: 1px solid rgba(0,0,0,.5);
+        background: rgba(0,0,0,.25);
+        font-family: inherit;
+        font-size: 100%;
+        outline: 0;
+        color: #b5c91a;
+
+    }
+    .number {
+        text-align: center;
+        color: #8c9e10;
+        font-size: 20px;
+        padding-left:5%;
+        padding-right:5%;
+        font-family: Arial, Helvetica, sans-serif;
+        line-height: 35px;
+    }
+    .inactive {
+        min-width: 150px;
+        padding: 8px 0 10px 0;
+        text-align: center;
+        border: 1px solid rgba(0,0,0,.5);
+        opacity: 0;
+    }
 
 </style>
 
@@ -69,11 +114,10 @@
 <div class="container">
     <h1>Statistics</h1>
     <h2>See the rank of the players. Sort the list by the corresponding arrows</h2>
-    <#if players??>
         <div>
             <table>
                 <thead>
-                    <tr>
+                <tr>
                     <th>Nickname
                     </th>
                     <th>Points
@@ -136,10 +180,10 @@
                             <input class="floated" type="submit" value="&#x25BC;"/>
                         </form>
                     </th>
-                    </tr>
+                </tr>
                 </thead>
                 <tbody>
-                    <#list players as player>
+                <#list slice.content as player>
                     <tr>
                         <td>${player.nickname}</td>
                         <td>${player.points}</td>
@@ -148,14 +192,38 @@
                         <td>${player.loses}</td>
                         <td>${player.draws}</td>
                     </tr>
-                    </#list>
+                </#list>
                 </tbody>
             </table>
         </div>
-    <#else>
-        <h2>Failed to retrieve the players</h2>
-    </#if>
-</div>
+    </div>
+    <div class="resultContainer">
+        <div class="minContainer">
+            <#if slice.hasPrevious()>
+                <form method="GET" action="/statistics">
+                    <input type="hidden" name="sortingType" value="${type}"/>
+                    <input type="hidden" name="sortingOrder" value="${order?lower_case}"/>
+                    <input type="hidden" name="page" value=${slice.number - 1}>
+                    <input class="resultNav" type="submit" value="&#8249;"/>
+                </form>
+            <#else>
+                <button class="inactive"></button>
+            </#if>
+            <div class="number">
+                ${slice.number + 1}
+            </div>
+            <#if slice.hasNext()>
+                <form method="GET" action="/statistics">
+                    <input type="hidden" name="sortingType" value="${type}"/>
+                    <input type="hidden" name="sortingOrder" value="${order?lower_case}"/>
+                    <input type="hidden" name="page" value=${slice.number + 1}>
+                    <input class="resultNav" type="submit" value="&#8250;"/>
+                </form>
+            <#else>
+                <button class="inactive"></button>
+            </#if>
+        </div>
+    </div>
 </body>
 <#include "./parts/footer.ftl">
 </html>

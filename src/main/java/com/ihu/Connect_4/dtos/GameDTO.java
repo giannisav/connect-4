@@ -1,25 +1,23 @@
 package com.ihu.Connect_4.dtos;
 
-public class GameResponseDTO {
+public class GameDTO {
 
     private Long id;
     private String nextMoveNickname;
     private String yellowPlayerNickname;
-    private String yellowUuid;
     private String redPlayerNickname;
-    private String redUuid;
+    private String uuid;
     private char[][] board;
     private String gameState;
 
-    public GameResponseDTO() {}
+    public GameDTO() {}
 
-    public GameResponseDTO(Long id, String nextMoveNickname, String yellowPlayerNickname, String yellowUuid, String redPlayerNickname, String redUuid, char[][] board, String gameState) {
+    public GameDTO(Long id, String nextMoveNickname, String yellowPlayerNickname, String redPlayerNickname, String uuid, char[][] board, String gameState) {
         this.id = id;
         this.nextMoveNickname = nextMoveNickname;
         this.yellowPlayerNickname = yellowPlayerNickname;
-        this.yellowUuid = yellowUuid;
         this.redPlayerNickname = redPlayerNickname;
-        this.redUuid = redUuid;
+        this.uuid = uuid;
         this.board = board;
         this.gameState = gameState;
     }
@@ -44,17 +42,13 @@ public class GameResponseDTO {
 
     public void setYellowPlayerNickname(String yellowPlayerNickname) { this.yellowPlayerNickname = yellowPlayerNickname; }
 
-    public String getYellowUuid() { return yellowUuid; }
-
-    public void setYellowUuid(String yellowUuid) { this.yellowUuid = yellowUuid; }
-
     public String getRedPlayerNickname() { return redPlayerNickname; }
 
     public void setRedPlayerNickname(String redPlayerNickname) { this.redPlayerNickname = redPlayerNickname; }
 
-    public String getRedUuid() { return redUuid; }
+    public String getUuid() { return uuid; }
 
-    public void setRedUuid(String redUuid) { this.redUuid = redUuid; }
+    public void setUuid(String uuid) { this.uuid = uuid; }
 
     public char[][] getBoard() {
         return board;

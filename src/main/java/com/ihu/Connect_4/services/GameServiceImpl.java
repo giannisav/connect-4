@@ -1,6 +1,6 @@
 package com.ihu.Connect_4.services;
 
-import com.ihu.Connect_4.dtos.GameResponseDTO;
+import com.ihu.Connect_4.dtos.GameDTO;
 import com.ihu.Connect_4.entities.Game;
 import com.ihu.Connect_4.entities.Player;
 import com.ihu.Connect_4.enums.GameState;
@@ -37,21 +37,21 @@ public class GameServiceImpl implements GameService {
 
     @Transactional
     @Override
-    public GameResponseDTO createGame(String nickname) {
-        Player player = validatePlayerExists(nickname);
+    public GameDTO createGame(String nickname) {
+        Player player = fetchPlayer(nickname);
         Game game = new Game();
         player.setUuid(UUID.randomUUID().toString());
         game.setYellowPlayer(player);
         game.setNextMoveNickname("Wait your opponent to connect");
         game.setBoardMoves("");
-        return mapper.mapToGameResponseDTO(repository.save(game));
+        return mapper.mapToGameDTO(repository.save(game), player.getUuid());
     }
 
     @Transactional
     @Override
-    public GameResponseDTO joinGame(String nickname, Long id) {
-        Game game = validateGameExists(id);
-        Player player = validatePlayerExists(nickname);
+    public GameDTO joinGame(String nickname, Long id) {
+        Game game = fetchGame(id);
+        Player player = fetchPlayer(nickname);
         if(nickname.equals(game.getYellowPlayer().getNickname())) {
             throw new UnauthorizedPlayerException("Sorry you are not allowed to win your self");
         }
@@ -62,55 +62,53 @@ public class GameServiceImpl implements GameService {
         game.setNextMoveNickname(game.getYellowPlayer().getNickname());
         game.setRedPlayer(player);
         game.setGameState(GameState.RUNNING);
-        return mapper.mapToGameResponseDTO(repository.save(game));
+        return mapper.mapToGameDTO(repository.save(game), player.getUuid());
     }
 
     @Transactional
     @Override
-    public GameResponseDTO play(String nickname,String uuid, Long id, Integer column) {
-        Game game = validateGameExists(id);
+    public GameDTO play(String nickname, String uuid, Long id, Integer column) {
+        Game game = fetchGame(id);
         checkRules(nickname, uuid, game, column);
         if(boardUtil.moveIsWinning(game.getBoardMoves(), column)) {
-            return gameHasWinner(game, nickname, column);
+            return gameHasWinner(game, nickname, column, uuid);
         }
         if(boardUtil.gameIsDrawIfMoveIsNotWinning(game.getBoardMoves())) {
-            return resultIsDraw(game, column);
+            return resultIsDraw(game, column, uuid);
         }
         String nextMoveNickname = nickname.equals(game.getYellowPlayer().getNickname()) ? game.getRedPlayer().getNickname() : game.getYellowPlayer().getNickname();
         game.setNextMoveNickname(nextMoveNickname);
         game.setBoardMoves(game.getBoardMoves() + column);
-        return mapper.mapToGameResponseDTO(repository.save(game));
+        return mapper.mapToGameDTO(repository.save(game), uuid);
     }
 
     @Transactional
     @Override
-    public GameResponseDTO getGameStatus(String nickname, Long id) {
-        Game game = validateGameExists(id);
-        if(!(game.getYellowPlayer().getNickname().equals(nickname) || game.getRedPlayer().getNickname().equals(nickname))) {
-            throw new UnauthorizedPlayerException("You are not authorized to watch this game");
-        }
-        return mapper.mapToGameResponseDTO(game);
+    public GameDTO getGameStatus(String nickname, String uuid, Long id) {
+        Game game = fetchGame(id);
+        authenticatePlayer(nickname, uuid, game);
+        return mapper.mapToGameDTO(game, uuid);
     }
 
     @Transactional
     @Override
-    public GameResponseDTO cheatPlay(String nickname, String uuid, Long id) {
-        Game game = validateGameExists(id);
+    public GameDTO cheatPlay(String nickname, String uuid, Long id) {
+        Game game = fetchGame(id);
         Integer bestValidColumn = cheatService.getBestMove(game.getBoardMoves());
         return play(nickname, uuid, id, bestValidColumn);
     }
 
     @Override
-    public List<GameResponseDTO> findAvailableGames() {
+    public List<GameDTO> findAvailableGames() {
         LocalDateTime now = LocalDateTime.now();
         return repository.findAllByGameStateEquals(GameState.CREATED)
                 .stream()
                 .filter(game -> Math.abs(Duration.between(now, game.getCreatedAt()).toMinutes()) <= 10)
-                .map(game -> mapper.mapToGameResponseDTO(game))
+                .map(mapper::mapToGameDTO)
                 .collect(Collectors.toList());
     }
 
-    private GameResponseDTO gameHasWinner(Game game, String nickname, Integer column) {
+    private GameDTO gameHasWinner(Game game, String nickname, Integer column, String uuid) {
         game.setNextMoveNickname("Our winner is: " + nickname);
         game.setBoardMoves(game.getBoardMoves() + column);
         game.setGameState(GameState.FINISHED);
@@ -123,26 +121,20 @@ public class GameServiceImpl implements GameService {
             winnerSettings(red);
             loserSettings(yellow);
         }
-        return mapper.mapToGameResponseDTO(repository.save(game));
+        return mapper.mapToGameDTO(repository.save(game), uuid);
     }
 
-    private GameResponseDTO resultIsDraw(Game game, Integer column) {
+    private GameDTO resultIsDraw(Game game, Integer column, String uuid) {
         game.setNextMoveNickname("Result is a draw");
         game.setBoardMoves(game.getBoardMoves() + column);
         game.setGameState(GameState.FINISHED);
         drawSettings(game.getYellowPlayer());
         drawSettings(game.getRedPlayer());
-        return mapper.mapToGameResponseDTO(repository.save(game));
+        return mapper.mapToGameDTO(repository.save(game), uuid);
     }
 
-    private void checkRules(String nickname,String token, Game game, Integer column){
-        Player player = validatePlayerExists(nickname);
-        if(!(game.getYellowPlayer().getNickname().equals(nickname) || game.getRedPlayer().getNickname().equals(nickname))) {
-            throw new UnauthorizedPlayerException("You are not authorized to play to this game");
-        }
-        if(!player.getUuid().equals(token)) {
-            throw new UnauthorizedPlayerException("Not authenticated as " + nickname);
-        }
+    private void checkRules(String nickname, String uuid, Game game, Integer column){
+        authenticatePlayer(nickname, uuid, game);
         if(game.getGameState()!= GameState.RUNNING) {
             throw new InvalidTurnPlayException("Hmmm, you dont have opponent or the game has winner");
         }
@@ -154,12 +146,12 @@ public class GameServiceImpl implements GameService {
         }
     }
 
-    private Game validateGameExists(Long id) {
+    private Game fetchGame(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new NotExistingGameException("There is no game with id: " + id));
     }
 
-    private Player validatePlayerExists(String nickname) {
+    private Player fetchPlayer(String nickname) {
         return playerRepository.findByNickname(nickname)
                 .orElseThrow(() -> new NotExistingPlayerException("There is no player with nickname: " + nickname));
     }
@@ -179,5 +171,15 @@ public class GameServiceImpl implements GameService {
     private void drawSettings(Player player){
         player.setGamesPlayed(player.getGamesPlayed() + 1);
         player.setDraws(player.getDraws() + 1);
+    }
+
+    private void authenticatePlayer(String nickname, String uuid, Game game) {
+        Player player = fetchPlayer(nickname);
+        if(!(game.getYellowPlayer().equals(player) || game.getRedPlayer().equals(player))) {
+            throw new UnauthorizedPlayerException("You are not authorized to participate to this game");
+        }
+        if(!player.getUuid().equals(uuid)) {
+            throw new UnauthorizedPlayerException("Not authenticated as " + nickname);
+        }
     }
 }

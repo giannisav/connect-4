@@ -236,18 +236,19 @@
     <div class="forms">
         <form id="play" action="/play" method="post">
             <input type="hidden" name="nickname" value=${nickname}>
-            <input type="hidden" name="token" value=${(nickname == game.yellowPlayerNickname) ? then (game.yellowUuid, game.redUuid)}>
+            <input type="hidden" name="uuid" value=${game.uuid}>
             <input type="hidden" name="id" value=${game.id}>
             <input  id="column" type="hidden" name="column" placeholder="choose column">
         </form>
         <form action="/board" method="get">
             <input type="hidden" name="nickname" value=${nickname}>
+            <input type="hidden" name="uuid" value=${game.uuid}>
             <input type="hidden" name="id" value=${game.id}>
             <input type="submit" value="See opponent's move">
         </form>
         <form style="margin-top: 20vh" action="/cheat" method="post">
             <input type="hidden" name="nickname" value=${nickname}>
-            <input type="hidden" name="token" value=${(nickname == game.yellowPlayerNickname) ? string(game.yellowUuid, game.redUuid)}>
+            <input type="hidden" name="uuid" value=${game.uuid}>
             <input type="hidden" name="id" value=${game.id}>
             <input type="submit" class="cheat" value="Cheat">
         </form>

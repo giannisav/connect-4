@@ -1,17 +1,16 @@
 package com.ihu.Connect_4.services;
 
-import com.ihu.Connect_4.dtos.GameResponseDTO;
-import com.ihu.Connect_4.entities.Game;
+import com.ihu.Connect_4.dtos.GameDTO;
 
 import java.util.List;
 
 public interface GameService {
 
-    GameResponseDTO createGame(String nickname);
-    GameResponseDTO joinGame(String nickname, Long id);
-    GameResponseDTO play(String nickname, String uuid, Long id, Integer column);
-    GameResponseDTO getGameStatus(String nickname, Long id);
-    GameResponseDTO cheatPlay(String nickname, String uuid, Long id);
-    List<GameResponseDTO> findAvailableGames();
+    GameDTO createGame(String nickname);
+    GameDTO joinGame(String nickname, Long id);
+    GameDTO play(String nickname, String uuid, Long id, Integer column);
+    GameDTO getGameStatus(String nickname, String uuid, Long id);
+    GameDTO cheatPlay(String nickname, String uuid, Long id);
+    List<GameDTO> findAvailableGames();
 
 }

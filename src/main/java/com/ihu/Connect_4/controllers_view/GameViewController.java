@@ -1,6 +1,6 @@
 package com.ihu.Connect_4.controllers_view;
 
-import com.ihu.Connect_4.dtos.GameResponseDTO;
+import com.ihu.Connect_4.dtos.GameDTO;
 import com.ihu.Connect_4.services.GameService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -37,7 +37,7 @@ public class GameViewController {
 
     @GetMapping("/games")
     public String findAvailableGames(Model model) {
-        List<GameResponseDTO> games = gameService.findAvailableGames();
+        List<GameDTO> games = gameService.findAvailableGames();
         model.addAttribute("games", games);
         return "joinPage";
     }
@@ -45,8 +45,9 @@ public class GameViewController {
     @GetMapping("/board")
     public String getGameState(@ModelAttribute("nickname") String nickname,
                                @ModelAttribute("id") Long id,
+                               @ModelAttribute("uuid") String uuid,
                                Model model) {
-        GameResponseDTO game = gameService.getGameStatus(nickname, id);
+        GameDTO game = gameService.getGameStatus(nickname, uuid, id);
         model.addAttribute("game", game);
         return "board";
     }
@@ -54,7 +55,7 @@ public class GameViewController {
     @PostMapping("/create")
     public String createGame(@ModelAttribute(name = "nickname") String nickname,
                              Model model) {
-        GameResponseDTO game = gameService.createGame(nickname);
+        GameDTO game = gameService.createGame(nickname);
         model.addAttribute("game",game);
         return "board";
     }
@@ -63,28 +64,28 @@ public class GameViewController {
     public String joinGame(@ModelAttribute(name = "nickname") String nickname,
                            @ModelAttribute(name = "id") String id,
                            Model model) {
-        GameResponseDTO game = gameService.joinGame(nickname, Long.parseLong(id));
+        GameDTO game = gameService.joinGame(nickname, Long.parseLong(id));
         model.addAttribute("game",game);
         return "board";
     }
 
     @PostMapping("/play")
     public String play(@ModelAttribute(name = "nickname") String nickname,
-                       @ModelAttribute(name = "token") String token,
+                       @ModelAttribute(name = "uuid") String uuid,
                        @ModelAttribute(name = "id") String id,
-                       @ModelAttribute(name="column") String column,
+                       @ModelAttribute(name = "column") String column,
                        Model model) {
-        GameResponseDTO game = gameService.play(nickname, token, Long.parseLong(id), Integer.parseInt(column));
+        GameDTO game = gameService.play(nickname, uuid, Long.parseLong(id), Integer.parseInt(column));
         model.addAttribute("game", game);
         return "board";
     }
 
     @PostMapping("/cheat")
     public String cheat(@ModelAttribute(name = "nickname") String nickname,
-                        @ModelAttribute(name = "token") String token,
+                        @ModelAttribute(name = "uuid") String uuid,
                         @ModelAttribute(name = "id") String id,
                         Model model) {
-        GameResponseDTO game = gameService.cheatPlay(nickname, token, Long.parseLong(id));
+        GameDTO game = gameService.cheatPlay(nickname, uuid, Long.parseLong(id));
         model.addAttribute("game", game);
         return "board";
     }

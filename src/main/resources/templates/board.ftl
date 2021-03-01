@@ -214,7 +214,7 @@
     </tr>
     <tr>
         <td style="color:#ffda2d">${game.yellowPlayerNickname}</td>
-        <td>${game.nextMoveNickname}</td>
+        <td id="nextMove">${game.nextMoveNickname}</td>
         <td>${game.gameState?lower_case}</td>
         <td style="color:#d9344a">${game.redPlayerNickname}</td>
     </tr>
@@ -233,6 +233,7 @@
         </div>
         </#list>
     </div>
+    <div id="nick" style="display: none">${nickname}</div>
     <div class="forms">
         <form id="play" action="/play" method="post">
             <input type="hidden" name="nickname" value=${nickname}>
@@ -240,11 +241,10 @@
             <input type="hidden" name="id" value=${game.id}>
             <input  id="column" type="hidden" name="column" placeholder="choose column">
         </form>
-        <form action="/board" method="get">
+        <form id ="getStateForm" action="/board" method="get">
             <input type="hidden" name="nickname" value=${nickname}>
             <input type="hidden" name="uuid" value=${game.uuid}>
             <input type="hidden" name="id" value=${game.id}>
-            <input type="submit" value="See opponent's move">
         </form>
         <form style="margin-top: 20vh" action="/cheat" method="post">
             <input type="hidden" name="nickname" value=${nickname}>
@@ -264,5 +264,15 @@
             document.getElementById("play").submit();
         }
     });
+
+    (function() {
+        let nextMove = document.getElementById("nextMove").innerHTML;
+        let nickname = document.getElementById("nick").innerHTML;
+        setInterval(function(){
+            if (nextMove !== nickname) {
+                document.getElementById("getStateForm").submit();
+            }
+        }, 7000);
+    })();
 </script>
 </html>

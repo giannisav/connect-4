@@ -1,5 +1,6 @@
 package com.ihu.Connect_4.repositories;
 
+import com.ihu.Connect_4.entities.AuthenticationDetails;
 import com.ihu.Connect_4.entities.Game;
 import com.ihu.Connect_4.enums.GameState;
 import org.springframework.data.jpa.repository.JpaRepository;

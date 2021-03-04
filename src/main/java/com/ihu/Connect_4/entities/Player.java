@@ -25,9 +25,6 @@ public class Player {
 
     private Long draws;
 
-    @Column(name = "uuid", unique = true)
-    private String uuid;
-
     public Player (){}
 
     public Player(String nickname, Long points, Long gamesPlayed, Long wins, Long loses, Long draws) {
@@ -39,7 +36,7 @@ public class Player {
         this.draws = draws;
     }
 
-    public Player(Long id, String nickname, Long points, Long gamesPlayed, Long wins, Long loses, Long draws, String uuid) {
+    public Player(Long id, String nickname, Long points, Long gamesPlayed, Long wins, Long loses, Long draws) {
         this.id = id;
         this.nickname = nickname;
         this.points = points;
@@ -47,7 +44,6 @@ public class Player {
         this.wins = wins;
         this.loses = loses;
         this.draws = draws;
-        this.uuid = uuid;
     }
 
     public Long getId() {
@@ -106,7 +102,4 @@ public class Player {
         this.draws = draws;
     }
 
-    public String getUuid() { return uuid; }
-
-    public void setUuid(String uuid) { this.uuid = uuid; }
 }

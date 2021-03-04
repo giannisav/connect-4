@@ -4,12 +4,15 @@ import com.ihu.Connect_4.enums.GameState;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "game")
 public class Game {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "game_id")
     private Long id;
 
     private String nextMoveNickname;
@@ -28,6 +31,10 @@ public class Game {
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "game_id")
+    private List<AuthenticationDetails> authenticationDetails = new ArrayList<>();
 
     @PrePersist
     public void onPrePersist() {
@@ -101,4 +108,12 @@ public class Game {
     public LocalDateTime getCreatedAt() { return createdAt; }
 
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public List<AuthenticationDetails> getAuthenticationDetails() {
+        return authenticationDetails;
+    }
+
+    public void setAuthenticationDetails(List<AuthenticationDetails> authenticationDetails) {
+        this.authenticationDetails = authenticationDetails;
+    }
 }

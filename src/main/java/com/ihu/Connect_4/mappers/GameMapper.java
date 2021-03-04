@@ -14,14 +14,25 @@ public class GameMapper {
         this.boardUtil = boardUtil;
     }
 
-    public GameDTO mapToGameDTO(Game game, String... uuid) {
+    public GameDTO mapToGameDTO(Game game) {
+        GameDTO gameDTO = baseMapping(game);
+        gameDTO.setUuid("");
+        return gameDTO;
+    }
+
+    public GameDTO mapToGameDTOWithUuid(Game game, String uuid) {
+        GameDTO gameDTO = baseMapping(game);
+        gameDTO.setUuid(uuid);
+        return gameDTO;
+    }
+
+    private GameDTO baseMapping(Game game) {
         GameDTO gameDTO = new GameDTO();
         gameDTO.setId(game.getId());
         gameDTO.setNextMoveNickname(game.getNextMoveNickname());
         gameDTO.setYellowPlayerNickname(game.getYellowPlayer().getNickname());
         String redNickname = null == game.getRedPlayer() ? "Not connected" : game.getRedPlayer().getNickname();
         gameDTO.setRedPlayerNickname(redNickname);
-        gameDTO.setUuid(uuid.length == 0 ? "" : uuid[0]);
         gameDTO.setBoard(boardUtil.convertTo2DBoard(game.getBoardMoves()));
         gameDTO.setGameState(game.getGameState().name());
         return gameDTO;

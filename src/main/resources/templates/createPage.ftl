@@ -1,6 +1,6 @@
-<html>
+<html lang="en">
 <head>
-    <title>Create Game</title>
+    <title>Game Vs Player</title>
     <link rel="stylesheet" href="./css/form.css"/>
     <style>
 
@@ -25,10 +25,10 @@
 <body>
 <#include "parts/navbar.ftl">
 <div class="container">
-    <h1>Create Game</h1>
+    <h1>Game Vs Player</h1>
     <form action="/create" method="post">
         <input type="text" name="nickname" placeholder="nickname" />
-        <input type="submit" value="Create" />
+        <input type="submit" value="Create"/>
     </form>
 </div>
 </body>

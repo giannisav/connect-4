@@ -36,6 +36,8 @@ public class Game {
     @JoinColumn(name = "game_id")
     private List<AuthenticationDetails> authenticationDetails = new ArrayList<>();
 
+    private boolean isVsAi;
+
     @PrePersist
     public void onPrePersist() {
         if (gameState == null) {
@@ -48,13 +50,14 @@ public class Game {
 
     public Game(){}
 
-    public Game(Long id, String nextMoveNickname, Player yellowPlayer, Player redPlayer, String boardMoves, GameState gameState) {
+    public Game(Long id, String nextMoveNickname, Player yellowPlayer, Player redPlayer, String boardMoves, GameState gameState, boolean isVsAi) {
         this.id = id;
         this.nextMoveNickname = nextMoveNickname;
         this.yellowPlayer = yellowPlayer;
         this.redPlayer = redPlayer;
         this.boardMoves = boardMoves;
         this.gameState = gameState;
+        this.isVsAi = isVsAi;
     }
 
     public Long getId() {
@@ -115,5 +118,13 @@ public class Game {
 
     public void setAuthenticationDetails(List<AuthenticationDetails> authenticationDetails) {
         this.authenticationDetails = authenticationDetails;
+    }
+
+    public boolean getIsVsAi() {
+        return isVsAi;
+    }
+
+    public void setIsVsAi(boolean vsAi) {
+        isVsAi = vsAi;
     }
 }

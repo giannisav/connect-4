@@ -9,10 +9,11 @@ public class GameDTO {
     private String uuid;
     private char[][] board;
     private String gameState;
+    private boolean isVsAi;
 
     public GameDTO() {}
 
-    public GameDTO(Long id, String nextMoveNickname, String yellowPlayerNickname, String redPlayerNickname, String uuid, char[][] board, String gameState) {
+    public GameDTO(Long id, String nextMoveNickname, String yellowPlayerNickname, String redPlayerNickname, String uuid, char[][] board, String gameState, boolean isVsAi) {
         this.id = id;
         this.nextMoveNickname = nextMoveNickname;
         this.yellowPlayerNickname = yellowPlayerNickname;
@@ -20,6 +21,7 @@ public class GameDTO {
         this.uuid = uuid;
         this.board = board;
         this.gameState = gameState;
+        this.isVsAi = isVsAi;
     }
 
     public Long getId() {
@@ -64,5 +66,13 @@ public class GameDTO {
 
     public void setGameState(String gameState) {
         this.gameState = gameState;
+    }
+
+    public boolean getIsVsAi() {
+        return isVsAi;
+    }
+
+    public void setIsVsAi(boolean isVsAi) {
+        this.isVsAi = isVsAi;
     }
 }

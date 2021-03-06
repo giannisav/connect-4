@@ -35,6 +35,7 @@ public class GameMapper {
         gameDTO.setRedPlayerNickname(redNickname);
         gameDTO.setBoard(boardUtil.convertTo2DBoard(game.getBoardMoves()));
         gameDTO.setGameState(game.getGameState().name());
+        gameDTO.setIsVsAi(game.getIsVsAi());
         return gameDTO;
     }
 }

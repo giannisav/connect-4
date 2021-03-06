@@ -13,8 +13,14 @@
       </a>
       <a href="/create">
         <div class="nav-wrap">
-          <img class="navmenu" src="magic-wand.png" alt="Create Game">
-          <p>Create Game</p>
+          <img class="navmenu" src="magic-wand.png" alt="Game Vs Player">
+          <p>Game Vs Player</p>
+        </div>
+      </a>
+      <a href="/createAI">
+        <div class="nav-wrap">
+          <img class="navmenu" src="robot.png" alt="Game Vs AI">
+          <p>Game Vs AI</p>
         </div>
       </a>
       <a href="/join">

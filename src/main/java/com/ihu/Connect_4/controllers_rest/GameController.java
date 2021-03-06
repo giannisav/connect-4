@@ -21,7 +21,12 @@ public class GameController {
 
     @PostMapping("/{nickname}")
     public ResponseEntity<GameDTO> createGame(@PathVariable("nickname") String nickname) {
-        return ResponseEntity.ok().body(gameService.createGame(nickname));
+        return ResponseEntity.ok().body(gameService.createGame(nickname, false));
+    }
+
+    @PostMapping("/ai/{nickname}")
+    public ResponseEntity<GameDTO> createGameVsAi(@PathVariable("nickname") String nickname) {
+        return ResponseEntity.ok().body(gameService.createGameVsAi(nickname));
     }
 
     @PostMapping("/join/{nickname}/{id}")
@@ -36,6 +41,14 @@ public class GameController {
                                             @PathVariable("id") Long id,
                                             @PathVariable("column") int column) {
         return ResponseEntity.ok(gameService.play(nickname, uuid, id, column));
+    }
+
+    @PostMapping("ai/play/{nickname}/{uuid}/{id}/{column}")
+    public ResponseEntity<GameDTO> playGameVsAi(@PathVariable("nickname") String nickname,
+                                            @PathVariable("uuid") String uuid,
+                                            @PathVariable("id") Long id,
+                                            @PathVariable("column") int column) {
+        return ResponseEntity.ok(gameService.playVsAi(nickname, uuid, id, column));
     }
 
     @GetMapping("/{nickname}/{uuid}/{id}")

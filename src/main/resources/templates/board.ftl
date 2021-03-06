@@ -239,7 +239,13 @@
             <input type="hidden" name="nickname" value=${nickname}>
             <input type="hidden" name="uuid" value=${game.uuid}>
             <input type="hidden" name="id" value=${game.id}>
-            <input  id="column" type="hidden" name="column" placeholder="choose column">
+            <input  id="column" type="hidden" name="column">
+        </form>
+        <form id="playVsAi" action="/playAI" method="post">
+            <input type="hidden" name="nickname" value=${nickname}>
+            <input type="hidden" name="uuid" value=${game.uuid}>
+            <input type="hidden" name="id" value=${game.id}>
+            <input  id="column2" type="hidden" name="column">
         </form>
         <form id ="getStateForm" action="/board" method="get">
             <input type="hidden" name="nickname" value=${nickname}>
@@ -252,6 +258,7 @@
             <input type="hidden" name="id" value=${game.id}>
             <input type="submit" class="cheat" value="Cheat">
         </form>
+        <div id="isVsAi" style="display: none">${game.isVsAi?string('true', 'false')}</div>
     </div>
     <#include "./parts/detectiveInfo.ftl">
 </section>
@@ -261,7 +268,13 @@
     document.getElementById("board").addEventListener("click", (e) => {
         if (e.target.classList.contains("circle") && e.target.classList[1].length === 1) {
             document.getElementById("column").value = e.target.classList[1];
-            document.getElementById("play").submit();
+            if (document.getElementById("isVsAi").innerHTML === 'true') {
+                document.getElementById("column2").value = e.target.classList[1];
+                document.getElementById("playVsAi").submit();
+            } else {
+                document.getElementById("column").value = e.target.classList[1];
+                document.getElementById("play").submit();
+            }
         }
     });
 

@@ -22,6 +22,8 @@ import java.util.stream.Collectors;
 @Service
 public class GameServiceImpl implements GameService {
 
+    private static final String AI_ROBOT = "AI-Robot";
+
     private final GameRepository repository;
     private final PlayerRepository playerRepository;
     private final GameMapper mapper;
@@ -38,15 +40,25 @@ public class GameServiceImpl implements GameService {
 
     @Transactional
     @Override
-    public GameDTO createGame(String nickname) {
+    public GameDTO createGame(String nickname, boolean isVsAi) {
         Player player = fetchPlayer(nickname);
         Game game = new Game();
         game.setYellowPlayer(player);
         game.setNextMoveNickname("Wait your opponent to connect");
         game.setBoardMoves("");
+        game.setIsVsAi(isVsAi);
         String uuid = UUID.randomUUID().toString();
         game.getAuthenticationDetails().add(new AuthenticationDetails(uuid, nickname));
         return mapper.mapToGameDTOWithUuid(repository.save(game), uuid);
+    }
+
+    @Transactional
+    @Override
+    public GameDTO createGameVsAi(String nickname) {
+        GameDTO gameDTO = createGame(nickname, true);
+        GameDTO dtoToReturn = joinGame(AI_ROBOT, gameDTO.getId());
+        dtoToReturn.setUuid(gameDTO.getUuid());
+        return dtoToReturn;
     }
 
     @Transactional
@@ -80,6 +92,16 @@ public class GameServiceImpl implements GameService {
         game.setNextMoveNickname(nextMoveNickname);
         game.setBoardMoves(game.getBoardMoves() + column);
         return mapper.mapToGameDTOWithUuid(repository.save(game), uuid);
+    }
+
+    @Transactional
+    @Override
+    public GameDTO playVsAi(String nickname, String uuid, Long id, Integer column) {
+        GameDTO gameDTO = play(nickname, uuid, id, column);
+        Game game = fetchGame(id);
+        GameDTO dtoToReturn = cheatPlay(AI_ROBOT, game.getAuthenticationDetails().get(1).getUuid(), id);
+        dtoToReturn.setUuid(gameDTO.getUuid());
+        return dtoToReturn;
     }
 
     @Transactional

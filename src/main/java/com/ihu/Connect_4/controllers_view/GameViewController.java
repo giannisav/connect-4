@@ -28,6 +28,12 @@ public class GameViewController {
         return "createPage";
     }
 
+    @GetMapping("/createAI")
+    public String createVsAiPage(Model model) {
+        model.addAttribute("nickname", "");
+        return "createVsAiPage";
+    }
+
     @GetMapping("/join")
     public String joinPage(Model model) {
         model.addAttribute("nickname", "");
@@ -55,7 +61,15 @@ public class GameViewController {
     @PostMapping("/create")
     public String createGame(@ModelAttribute(name = "nickname") String nickname,
                              Model model) {
-        GameDTO game = gameService.createGame(nickname);
+        GameDTO game = gameService.createGame(nickname, false);
+        model.addAttribute("game",game);
+        return "board";
+    }
+
+    @PostMapping("/createAI")
+    public String createGameVsAi(@ModelAttribute(name = "nickname") String nickname,
+                             Model model) {
+        GameDTO game = gameService.createGameVsAi(nickname);
         model.addAttribute("game",game);
         return "board";
     }
@@ -76,6 +90,17 @@ public class GameViewController {
                        @ModelAttribute(name = "column") String column,
                        Model model) {
         GameDTO game = gameService.play(nickname, uuid, Long.parseLong(id), Integer.parseInt(column));
+        model.addAttribute("game", game);
+        return "board";
+    }
+
+    @PostMapping("/playAI")
+    public String playVsAi(@ModelAttribute(name = "nickname") String nickname,
+                       @ModelAttribute(name = "uuid") String uuid,
+                       @ModelAttribute(name = "id") String id,
+                       @ModelAttribute(name = "column") String column,
+                       Model model) {
+        GameDTO game = gameService.playVsAi(nickname, uuid, Long.parseLong(id), Integer.parseInt(column));
         model.addAttribute("game", game);
         return "board";
     }

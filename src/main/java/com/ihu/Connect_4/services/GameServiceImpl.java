@@ -98,6 +98,9 @@ public class GameServiceImpl implements GameService {
     @Override
     public GameDTO playVsAi(String nickname, String uuid, Long id, Integer column) {
         GameDTO gameDTO = play(nickname, uuid, id, column);
+        if (gameDTO.getGameState().equals(GameState.FINISHED.name())){
+            return gameDTO;
+        }
         Game game = fetchGame(id);
         GameDTO dtoToReturn = cheatPlay(AI_ROBOT, game.getAuthenticationDetails().get(1).getUuid(), id);
         dtoToReturn.setUuid(gameDTO.getUuid());
@@ -137,10 +140,10 @@ public class GameServiceImpl implements GameService {
         Player yellow = game.getYellowPlayer();
         Player red = game.getRedPlayer();
         if (nickname.equals(yellow.getNickname())) {
-            winnerSettings(yellow);
+            winnerSettings(yellow, game.getIsVsAi());
             loserSettings(red);
         } else {
-            winnerSettings(red);
+            winnerSettings(red, false);
             loserSettings(yellow);
         }
         return mapper.mapToGameDTOWithUuid(repository.save(game), uuid);
@@ -161,7 +164,7 @@ public class GameServiceImpl implements GameService {
             if(game.getBoardMoves().length() == 0) {
                 throw new InvalidTurnPlayException("Sorry, you can't play, you are alone in this room");
             } else {
-                throw new InvalidTurnPlayException("Game state describe it clearly, THE GAME HAS FINISHED");
+                throw new InvalidTurnPlayException("The game has finished");
             }
         }
         if (!game.getNextMoveNickname().equals(nickname)) {
@@ -182,10 +185,13 @@ public class GameServiceImpl implements GameService {
                 .orElseThrow(() -> new NotExistingPlayerException("There is no player with nickname: " + nickname));
     }
 
-    private void winnerSettings(Player player) {
+    private void winnerSettings(Player player, boolean isVsAi) {
         player.setPoints(player.getPoints() + 3);
         player.setGamesPlayed(player.getGamesPlayed() + 1);
         player.setWins(player.getWins() + 1);
+        if (isVsAi) {
+            player.setWinsVsAi(player.getWinsVsAi() + 1);
+        }
     }
 
     private void loserSettings(Player player) {

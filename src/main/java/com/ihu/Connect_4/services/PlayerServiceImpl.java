@@ -27,7 +27,7 @@ public class PlayerServiceImpl implements PlayerService {
     public PlayerDTO savePlayer(String nickname) {
         avoidXSS(nickname);
         Player player = repository.findByNickname(nickname)
-                .orElse(new Player(nickname, 1000L, 0L, 0L, 0L, 0L));
+                .orElse(new Player(nickname, 1000L, 0L, 0L, 0L, 0L, 0L));
         return mapper.mapToPlayerDTO(repository.save(player));
     }
 

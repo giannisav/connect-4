@@ -1,1 +1,1 @@
-INSERT INTO player (id, nickname, points, games_played, wins, loses, draws) VALUES (NEXTVAL('hibernate_sequence'), 'AI-Robot', 1000, 0, 0, 0, 0);
+INSERT INTO player (id, nickname, points, games_played, wins, loses, draws, wins_vs_ai) VALUES (NEXTVAL('hibernate_sequence'), 'AI-Robot', 1000, 0, 0, 0, 0, 0);

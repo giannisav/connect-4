@@ -8,6 +8,7 @@ public class PlayerDTO {
     private Long wins;
     private Long loses;
     private Long draws;
+    private Long winsVsAi;
 
     public PlayerDTO() {}
 
@@ -57,5 +58,13 @@ public class PlayerDTO {
 
     public void setDraws(Long draws) {
         this.draws = draws;
+    }
+
+    public Long getWinsVsAi() {
+        return winsVsAi;
+    }
+
+    public void setWinsVsAi(Long winsVsAi) {
+        this.winsVsAi = winsVsAi;
     }
 }

@@ -156,6 +156,18 @@
                             <input class="floated" type="submit" value="&#x25BC;"/>
                         </form>
                     </th>
+                    <th>Wins Vs AI
+                        <form method="GET" action="/statistics">
+                            <input type="hidden" name="sortingType" value="wins_vs_ai"/>
+                            <input type="hidden" name="sortingOrder" value="asc"/>
+                            <input class="floated" type="submit" value="&#x25B2;"/>
+                        </form>
+                        <form method="GET" action="/statistics">
+                            <input type="hidden" name="sortingType" value="wins_vs_ai"/>
+                            <input type="hidden" name="sortingOrder" value="desc"/>
+                            <input class="floated" type="submit" value="&#x25BC;"/>
+                        </form>
+                    </th>
                     <th>Loses
                         <form method="GET" action="/statistics">
                             <input type="hidden" name="sortingType" value="loses"/>
@@ -189,6 +201,7 @@
                         <td>${player.points}</td>
                         <td>${player.gamesPlayed}</td>
                         <td>${player.wins}</td>
+                        <td>${player.winsVsAi}</td>
                         <td>${player.loses}</td>
                         <td>${player.draws}</td>
                     </tr>

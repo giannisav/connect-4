@@ -25,18 +25,21 @@ public class Player {
 
     private Long draws;
 
+    private Long winsVsAi;
+
     public Player (){}
 
-    public Player(String nickname, Long points, Long gamesPlayed, Long wins, Long loses, Long draws) {
+    public Player(String nickname, Long points, Long gamesPlayed, Long wins, Long loses, Long draws, Long winsVsAi) {
         this.nickname = nickname;
         this.points = points;
         this.gamesPlayed = gamesPlayed;
         this.wins = wins;
         this.loses = loses;
         this.draws = draws;
+        this.winsVsAi = winsVsAi;
     }
 
-    public Player(Long id, String nickname, Long points, Long gamesPlayed, Long wins, Long loses, Long draws) {
+    public Player(Long id, String nickname, Long points, Long gamesPlayed, Long wins, Long loses, Long draws, Long winsVsAi) {
         this.id = id;
         this.nickname = nickname;
         this.points = points;
@@ -44,6 +47,7 @@ public class Player {
         this.wins = wins;
         this.loses = loses;
         this.draws = draws;
+        this.winsVsAi = winsVsAi;
     }
 
     public Long getId() {
@@ -102,4 +106,11 @@ public class Player {
         this.draws = draws;
     }
 
+    public Long getWinsVsAi() {
+        return winsVsAi;
+    }
+
+    public void setWinsVsAi(Long winsVsAi) {
+        this.winsVsAi = winsVsAi;
+    }
 }

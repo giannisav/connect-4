@@ -18,6 +18,7 @@ public class PlayerMapper {
         playerDTO.setWins(player.getWins());
         playerDTO.setLoses(player.getLoses());
         playerDTO.setDraws(player.getDraws());
+        playerDTO.setWinsVsAi(player.getWinsVsAi());
         return playerDTO;
     }
 

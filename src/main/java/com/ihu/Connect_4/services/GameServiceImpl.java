@@ -22,8 +22,6 @@ import java.util.stream.Collectors;
 @Service
 public class GameServiceImpl implements GameService {
 
-    private static final String AI_ROBOT = "AI-Robot";
-
     private final GameRepository repository;
     private final PlayerRepository playerRepository;
     private final GameMapper mapper;
@@ -50,15 +48,6 @@ public class GameServiceImpl implements GameService {
         String uuid = UUID.randomUUID().toString();
         game.getAuthenticationDetails().add(new AuthenticationDetails(uuid, nickname));
         return mapper.mapToGameDTOWithUuid(repository.save(game), uuid);
-    }
-
-    @Transactional
-    @Override
-    public GameDTO createGameVsAi(String nickname) {
-        GameDTO gameDTO = createGame(nickname, true);
-        GameDTO dtoToReturn = joinGame(AI_ROBOT, gameDTO.getId());
-        dtoToReturn.setUuid(gameDTO.getUuid());
-        return dtoToReturn;
     }
 
     @Transactional
@@ -92,19 +81,6 @@ public class GameServiceImpl implements GameService {
         game.setNextMoveNickname(nextMoveNickname);
         game.setBoardMoves(game.getBoardMoves() + column);
         return mapper.mapToGameDTOWithUuid(repository.save(game), uuid);
-    }
-
-    @Transactional
-    @Override
-    public GameDTO playVsAi(String nickname, String uuid, Long id, Integer column) {
-        GameDTO gameDTO = play(nickname, uuid, id, column);
-        if (gameDTO.getGameState().equals(GameState.FINISHED.name())){
-            return gameDTO;
-        }
-        Game game = fetchGame(id);
-        GameDTO dtoToReturn = cheatPlay(AI_ROBOT, game.getAuthenticationDetails().get(1).getUuid(), id);
-        dtoToReturn.setUuid(gameDTO.getUuid());
-        return dtoToReturn;
     }
 
     @Transactional
@@ -175,7 +151,7 @@ public class GameServiceImpl implements GameService {
         }
     }
 
-    private Game fetchGame(Long id) {
+    public Game fetchGame(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new NotExistingGameException("There is no game with id: " + id));
     }

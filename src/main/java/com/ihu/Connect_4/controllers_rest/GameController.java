@@ -3,6 +3,7 @@ package com.ihu.Connect_4.controllers_rest;
 import com.ihu.Connect_4.dtos.GameDTO;
 import com.ihu.Connect_4.exceptions.*;
 import com.ihu.Connect_4.services.GameService;
+import com.ihu.Connect_4.services.GameVsAiService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,9 +15,11 @@ import java.util.List;
 public class GameController {
 
     private final GameService gameService;
+    private final GameVsAiService gameVsAiService;
 
-    public GameController(GameService gameService) {
+    public GameController(GameService gameService, GameVsAiService gameVsAiService) {
         this.gameService = gameService;
+        this.gameVsAiService = gameVsAiService;
     }
 
     @PostMapping("/{nickname}")
@@ -26,7 +29,7 @@ public class GameController {
 
     @PostMapping("/ai/{nickname}")
     public ResponseEntity<GameDTO> createGameVsAi(@PathVariable("nickname") String nickname) {
-        return ResponseEntity.ok().body(gameService.createGameVsAi(nickname));
+        return ResponseEntity.ok().body(gameVsAiService.createGameVsAi(nickname));
     }
 
     @PostMapping("/join/{nickname}/{id}")
@@ -48,7 +51,7 @@ public class GameController {
                                             @PathVariable("uuid") String uuid,
                                             @PathVariable("id") Long id,
                                             @PathVariable("column") int column) {
-        return ResponseEntity.ok(gameService.playVsAi(nickname, uuid, id, column));
+        return ResponseEntity.ok(gameVsAiService.playVsAi(nickname, uuid, id, column));
     }
 
     @GetMapping("/{nickname}/{uuid}/{id}")

@@ -2,6 +2,7 @@ package com.ihu.Connect_4.controllers_view;
 
 import com.ihu.Connect_4.dtos.GameDTO;
 import com.ihu.Connect_4.services.GameService;
+import com.ihu.Connect_4.services.GameVsAiService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -12,9 +13,11 @@ import java.util.List;
 public class GameViewController {
 
     private final GameService gameService;
+    private final GameVsAiService gameVsAiService;
 
-    public GameViewController(GameService gameService) {
+    public GameViewController(GameService gameService, GameVsAiService gameVsAiService) {
         this.gameService = gameService;
+        this.gameVsAiService = gameVsAiService;
     }
 
     @GetMapping({"/"})
@@ -69,7 +72,7 @@ public class GameViewController {
     @PostMapping("/createAI")
     public String createGameVsAi(@ModelAttribute(name = "nickname") String nickname,
                              Model model) {
-        GameDTO game = gameService.createGameVsAi(nickname);
+        GameDTO game = gameVsAiService.createGameVsAi(nickname);
         model.addAttribute("game",game);
         return "board";
     }
@@ -100,7 +103,7 @@ public class GameViewController {
                        @ModelAttribute(name = "id") String id,
                        @ModelAttribute(name = "column") String column,
                        Model model) {
-        GameDTO game = gameService.playVsAi(nickname, uuid, Long.parseLong(id), Integer.parseInt(column));
+        GameDTO game = gameVsAiService.playVsAi(nickname, uuid, Long.parseLong(id), Integer.parseInt(column));
         model.addAttribute("game", game);
         return "board";
     }

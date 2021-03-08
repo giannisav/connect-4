@@ -12,7 +12,7 @@ import java.util.List;
 public class Game {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "game_id")
+    @Column(name = "game_id", unique = true, nullable = false)
     private Long id;
 
     private String nextMoveNickname;
@@ -32,8 +32,7 @@ public class Game {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "game_id")
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AuthenticationDetails> authenticationDetails = new ArrayList<>();
 
     private boolean isVsAi;

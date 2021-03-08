@@ -3,10 +3,9 @@ package com.ihu.Connect_4.services;
 import com.ihu.Connect_4.dtos.GameDTO;
 import com.ihu.Connect_4.entities.Game;
 import com.ihu.Connect_4.enums.GameState;
-import com.ihu.Connect_4.mappers.GameMapper;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class GameVsAiServiceImpl implements GameVsAiService{
@@ -15,7 +14,7 @@ public class GameVsAiServiceImpl implements GameVsAiService{
 
     private final GameService gameService;
 
-    public GameVsAiServiceImpl(GameService gameService, GameMapper mapper) {
+    public GameVsAiServiceImpl(GameService gameService) {
         this.gameService = gameService;
     }
 

@@ -11,17 +11,22 @@ public class AuthenticationDetails implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String uuid;
 
-    @Column()
+    @Column(nullable = false)
     private String nickname;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "game_id")
+    private Game game;
 
     public AuthenticationDetails() {}
 
-    public AuthenticationDetails(String uuid, String nickname) {
+    public AuthenticationDetails(String uuid, String nickname, Game game) {
         this.uuid = uuid;
         this.nickname = nickname;
+        this.game = game;
     }
 
     public Long getId() {
@@ -48,5 +53,12 @@ public class AuthenticationDetails implements Serializable {
         this.nickname = nickname;
     }
 
+    public Game getGame() {
+        return game;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
+    }
 
 }

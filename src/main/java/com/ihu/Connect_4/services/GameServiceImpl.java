@@ -7,12 +7,13 @@ import com.ihu.Connect_4.entities.Player;
 import com.ihu.Connect_4.enums.GameState;
 import com.ihu.Connect_4.exceptions.*;
 import com.ihu.Connect_4.mappers.GameMapper;
+import com.ihu.Connect_4.repositories.AuthenticationDetailsRepository;
 import com.ihu.Connect_4.repositories.GameRepository;
 import com.ihu.Connect_4.repositories.PlayerRepository;
 import com.ihu.Connect_4.utils.BoardUtil;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,13 +28,16 @@ public class GameServiceImpl implements GameService {
     private final GameMapper mapper;
     private final BoardUtil boardUtil;
     private final CheatService cheatService;
+    private final AuthenticationDetailsRepository authRepository;
 
-    public GameServiceImpl(GameRepository repository, PlayerRepository playerRepository, GameMapper mapper, BoardUtil boardUtil, CheatService cheatService) {
+    public GameServiceImpl(GameRepository repository, PlayerRepository playerRepository, GameMapper mapper,
+                           BoardUtil boardUtil, CheatService cheatService, AuthenticationDetailsRepository authRepository) {
         this.repository = repository;
         this.playerRepository = playerRepository;
         this.mapper = mapper;
         this.boardUtil = boardUtil;
         this.cheatService = cheatService;
+        this.authRepository = authRepository;
     }
 
     @Transactional
@@ -46,7 +50,7 @@ public class GameServiceImpl implements GameService {
         game.setBoardMoves("");
         game.setIsVsAi(isVsAi);
         String uuid = UUID.randomUUID().toString();
-        game.getAuthenticationDetails().add(new AuthenticationDetails(uuid, nickname));
+        authRepository.save(new AuthenticationDetails(uuid, nickname, game));
         return mapper.mapToGameDTOWithUuid(repository.save(game), uuid);
     }
 
@@ -62,7 +66,7 @@ public class GameServiceImpl implements GameService {
         game.setRedPlayer(player);
         game.setGameState(GameState.RUNNING);
         String uuid = UUID.randomUUID().toString();
-        game.getAuthenticationDetails().add(new AuthenticationDetails(uuid, nickname));
+        authRepository.save(new AuthenticationDetails(uuid, nickname, game));
         return mapper.mapToGameDTOWithUuid(repository.save(game), uuid);
     }
 
@@ -182,11 +186,7 @@ public class GameServiceImpl implements GameService {
     }
 
     private void authenticatePlayer(String nickname, String uuid, Game game) {
-        game.getAuthenticationDetails()
-                .stream()
-                .filter(authDetails -> authDetails.getNickname().equals(nickname))
-                .filter(authDetails -> authDetails.getUuid().equals(uuid))
-                .findAny()
+        authRepository.findByNicknameAndUuidAndGameEquals(nickname, uuid, game)
                 .orElseThrow(() -> new UnauthorizedPlayerException("You are not authorized to do this"));
     }
 }

@@ -9,7 +9,6 @@ import com.ihu.Connect_4.exceptions.*;
 import com.ihu.Connect_4.mappers.GameMapper;
 import com.ihu.Connect_4.repositories.AuthenticationDetailsRepository;
 import com.ihu.Connect_4.repositories.GameRepository;
-import com.ihu.Connect_4.repositories.PlayerRepository;
 import com.ihu.Connect_4.utils.BoardUtil;
 import org.springframework.stereotype.Service;
 
@@ -24,16 +23,16 @@ import java.util.stream.Collectors;
 public class GameServiceImpl implements GameService {
 
     private final GameRepository repository;
-    private final PlayerRepository playerRepository;
+    private final PlayerService playerService;
     private final GameMapper mapper;
     private final BoardUtil boardUtil;
     private final CheatService cheatService;
     private final AuthenticationDetailsRepository authRepository;
 
-    public GameServiceImpl(GameRepository repository, PlayerRepository playerRepository, GameMapper mapper,
+    public GameServiceImpl(GameRepository repository, PlayerService playerService, GameMapper mapper,
                            BoardUtil boardUtil, CheatService cheatService, AuthenticationDetailsRepository authRepository) {
         this.repository = repository;
-        this.playerRepository = playerRepository;
+        this.playerService = playerService;
         this.mapper = mapper;
         this.boardUtil = boardUtil;
         this.cheatService = cheatService;
@@ -43,7 +42,7 @@ public class GameServiceImpl implements GameService {
     @Transactional
     @Override
     public GameDTO createGame(String nickname, boolean isVsAi) {
-        Player player = fetchPlayer(nickname);
+        Player player = playerService.fetchPlayer(nickname);
         Game game = new Game();
         game.setYellowPlayer(player);
         game.setNextMoveNickname("Wait your opponent to connect");
@@ -58,7 +57,7 @@ public class GameServiceImpl implements GameService {
     @Override
     public GameDTO joinGame(String nickname, Long id) {
         Game game = fetchGame(id);
-        Player player = fetchPlayer(nickname);
+        Player player = playerService.fetchPlayer(nickname);
         if (game.getYellowPlayer() != null && game.getRedPlayer() != null) {
             throw new FullGameException("Sorry this game is full");
         }
@@ -158,11 +157,6 @@ public class GameServiceImpl implements GameService {
     public Game fetchGame(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new NotExistingGameException("There is no game with id: " + id));
-    }
-
-    private Player fetchPlayer(String nickname) {
-        return playerRepository.findByNickname(nickname)
-                .orElseThrow(() -> new NotExistingPlayerException("There is no player with nickname: " + nickname));
     }
 
     private void winnerSettings(Player player, boolean isVsAi) {

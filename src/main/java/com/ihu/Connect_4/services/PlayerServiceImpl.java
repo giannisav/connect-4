@@ -4,11 +4,13 @@ import com.ihu.Connect_4.dtos.PlayerDTO;
 import com.ihu.Connect_4.entities.Player;
 import com.ihu.Connect_4.enums.SortingOrder;
 import com.ihu.Connect_4.enums.SortingType;
+import com.ihu.Connect_4.exceptions.NotExistingPlayerException;
 import com.ihu.Connect_4.exceptions.XssException;
 import com.ihu.Connect_4.mappers.PlayerMapper;
 import com.ihu.Connect_4.repositories.PlayerRepository;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.HtmlUtils;
 
 import java.util.Optional;
@@ -24,6 +26,7 @@ public class PlayerServiceImpl implements PlayerService {
         this.mapper = mapper;
     }
 
+    @Transactional
     public PlayerDTO savePlayer(String nickname) {
         avoidXSS(nickname);
         Player player = repository.findByNickname(nickname)
@@ -42,6 +45,12 @@ public class PlayerServiceImpl implements PlayerService {
         Pageable pageable = PageRequest.of(page, size, sort);
         Slice<Player> statisticSlice = repository.findAll(pageable);
         return new SliceImpl<>(mapper.mapToPlayerDTOList(statisticSlice.getContent()), pageable, statisticSlice.hasNext());
+    }
+
+    @Transactional
+    public Player fetchPlayer(String nickname) {
+        return repository.findByNickname(nickname)
+                .orElseThrow(() -> new NotExistingPlayerException("There is no player with nickname: " + nickname));
     }
 
     private void avoidXSS(String input) {

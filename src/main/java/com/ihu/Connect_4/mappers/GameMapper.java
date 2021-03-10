@@ -31,7 +31,7 @@ public class GameMapper {
         gameDTO.setId(game.getId());
         gameDTO.setNextMoveNickname(game.getNextMoveNickname());
         gameDTO.setYellowPlayerNickname(game.getYellowPlayer().getNickname());
-        String redNickname = null == game.getRedPlayer() ? "Not connected" : game.getRedPlayer().getNickname();
+        String redNickname = (game.getRedPlayer() == null) ? "Not connected" : game.getRedPlayer().getNickname();
         gameDTO.setRedPlayerNickname(redNickname);
         gameDTO.setBoard(boardUtil.convertTo2DBoard(game.getBoardMoves()));
         gameDTO.setGameState(game.getGameState().name());

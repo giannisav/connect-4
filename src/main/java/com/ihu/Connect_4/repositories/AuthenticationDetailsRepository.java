@@ -14,6 +14,7 @@ import java.util.Optional;
 public interface AuthenticationDetailsRepository extends JpaRepository <AuthenticationDetails, Long> {
 
     Optional<AuthenticationDetails> findByNicknameAndUuidAndGameEquals(String nickname, String uuid, Game game);
+    Optional<AuthenticationDetails> findByNicknameAndGame_Id(String nickname, Long Id);
 
     @Modifying
     @Query("delete from AuthenticationDetails auth WHERE auth.game IN (?1)")

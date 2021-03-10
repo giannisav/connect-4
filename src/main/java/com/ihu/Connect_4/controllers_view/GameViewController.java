@@ -118,6 +118,16 @@ public class GameViewController {
         return "board";
     }
 
+    @PostMapping("/cheatAI")
+    public String cheatVsAi(@ModelAttribute(name = "nickname") String nickname,
+                            @ModelAttribute(name = "uuid") String uuid,
+                            @ModelAttribute(name = "id") String id,
+                            Model model) {
+        GameDTO game = gameVsAiService.cheatVsAi(nickname, uuid, Long.parseLong(id));
+        model.addAttribute("game", game);
+        return "board";
+    }
+
     @ExceptionHandler(Exception.class)
     public String error(Exception ex, Model model) {
         model.addAttribute("message", ex.getMessage());

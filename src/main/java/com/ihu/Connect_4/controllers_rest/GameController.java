@@ -73,6 +73,13 @@ public class GameController {
         return ResponseEntity.ok().body(gameService.cheatPlay(nickname, uuid, id));
     }
 
+    @PostMapping("ai/cheat/{nickname}/{uuid}/{id}/")
+    public ResponseEntity<GameDTO> cheatVsAi(@PathVariable("nickname") String nickname,
+                                         @PathVariable("uuid") String uuid,
+                                         @PathVariable("id") Long id)  {
+        return ResponseEntity.ok().body(gameVsAiService.cheatVsAi(nickname, uuid, id));
+    }
+
     @ExceptionHandler({ NotExistingPlayerException.class, NotExistingGameException.class, InvalidMoveException.class,
             InvalidTurnPlayException.class, FullGameException.class })
     public ResponseEntity<String> badRequestExceptionHandler(RuntimeException exception) {

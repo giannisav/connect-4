@@ -5,8 +5,8 @@ public enum SortingType {
     wins("wins"),
     loses("loses"),
     draws("draws"),
-    games_played("gamesPlayed"),
-    wins_vs_ai("winsVsAi");
+    gamesPlayed("gamesPlayed"),
+    winsVsAi("winsVsAi");
 
     private final String field;
 

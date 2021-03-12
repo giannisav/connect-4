@@ -134,12 +134,12 @@
                     </th>
                     <th>Games Played
                         <form method="GET" action="/statistics">
-                            <input type="hidden" name="sortingType" value="games_played"/>
+                            <input type="hidden" name="sortingType" value="gamesPlayed"/>
                             <input type="hidden" name="sortingOrder" value="asc"/>
                             <input class="floated" type="submit" value="&#x25B2;"/>
                         </form>
                         <form method="GET" action="/statistics">
-                            <input type="hidden" name="sortingType" value="games_played"/>
+                            <input type="hidden" name="sortingType" value="gamesPlayed"/>
                             <input type="hidden" name="sortingOrder" value="desc"/>
                             <input class="floated" type="submit" value="&#x25BC;"/>
                         </form>
@@ -158,12 +158,12 @@
                     </th>
                     <th>Wins Vs AI
                         <form method="GET" action="/statistics">
-                            <input type="hidden" name="sortingType" value="wins_vs_ai"/>
+                            <input type="hidden" name="sortingType" value="winsVsAi"/>
                             <input type="hidden" name="sortingOrder" value="asc"/>
                             <input class="floated" type="submit" value="&#x25B2;"/>
                         </form>
                         <form method="GET" action="/statistics">
-                            <input type="hidden" name="sortingType" value="wins_vs_ai"/>
+                            <input type="hidden" name="sortingType" value="winsVsAi"/>
                             <input type="hidden" name="sortingOrder" value="desc"/>
                             <input class="floated" type="submit" value="&#x25BC;"/>
                         </form>

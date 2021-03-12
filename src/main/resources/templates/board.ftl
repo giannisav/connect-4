@@ -252,7 +252,7 @@
             <input type="hidden" name="uuid" value=${game.uuid}>
             <input type="hidden" name="id" value=${game.id}>
         </form>
-        <form id="cheat" style="margin-top: 20vh" method="post" onsubmit="get_action(this)">
+        <form id="cheat" style="margin-top: 20vh" method="post" onsubmit="set_action(this, '/cheatAI', '/cheat')">
             <input type="hidden" name="nickname" value=${nickname}>
             <input type="hidden" name="uuid" value=${game.uuid}>
             <input type="hidden" name="id" value=${game.id}>
@@ -288,11 +288,11 @@
         }, 7000);
     })();
 
-    function get_action(form) {
+    function set_action(form, aiAction, playerAction) {
         if (document.getElementById("isVsAi").innerHTML === 'true') {
-            form.action = "/cheatAI";
+            form.action = aiAction;
         } else {
-            form.action = "/cheat";
+            form.action = playerAction;
         }
     }
 </script>

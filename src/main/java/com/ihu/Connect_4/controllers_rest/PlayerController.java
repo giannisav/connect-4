@@ -3,7 +3,7 @@ package com.ihu.Connect_4.controllers_rest;
 import com.ihu.Connect_4.dtos.PlayerDTO;
 import com.ihu.Connect_4.enums.SortingOrder;
 import com.ihu.Connect_4.enums.SortingType;
-import com.ihu.Connect_4.exceptions.XssException;
+import com.ihu.Connect_4.exceptions.NotAllowedNickname;
 import com.ihu.Connect_4.services.PlayerService;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
@@ -33,7 +33,7 @@ public class PlayerController {
         return ResponseEntity.ok().body(playerService.getPlayerStatistics(sortingType, sortingOrder, page, size));
     }
 
-    @ExceptionHandler(XssException.class)
+    @ExceptionHandler(NotAllowedNickname.class)
     public ResponseEntity<String> playerBadRequestExceptionHandler(RuntimeException exception) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
     }

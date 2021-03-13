@@ -5,7 +5,7 @@ import com.ihu.Connect_4.entities.Player;
 import com.ihu.Connect_4.enums.SortingOrder;
 import com.ihu.Connect_4.enums.SortingType;
 import com.ihu.Connect_4.exceptions.NotExistingPlayerException;
-import com.ihu.Connect_4.exceptions.XssException;
+import com.ihu.Connect_4.exceptions.NotAllowedNickname;
 import com.ihu.Connect_4.mappers.PlayerMapper;
 import com.ihu.Connect_4.repositories.PlayerRepository;
 import org.springframework.data.domain.*;
@@ -28,7 +28,7 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Transactional
     public PlayerDTO savePlayer(String nickname) {
-        avoidXSS(nickname);
+        validateNickname(nickname);
         Player player = repository.findByNickname(nickname)
                 .orElse(new Player(nickname, 1000L, 0L, 0L, 0L, 0L, 0L));
         return mapper.mapToPlayerDTO(repository.save(player));
@@ -47,15 +47,21 @@ public class PlayerServiceImpl implements PlayerService {
         return new SliceImpl<>(mapper.mapToPlayerDTOList(statisticSlice.getContent()), pageable, statisticSlice.hasNext());
     }
 
-    @Transactional
     public Player fetchPlayer(String nickname) {
         return repository.findByNickname(nickname)
-                .orElseThrow(() -> new NotExistingPlayerException("There is no player with nickname: " + nickname));
+                .orElseThrow(() -> new NotExistingPlayerException("There is no player with nickname: " + nickname + "."));
+    }
+
+    private void validateNickname(String input) {
+        avoidXSS(input);
+        if (input.contains(" ")) {
+            throw new NotAllowedNickname("Nickname should not contain any spaces.");
+        }
     }
 
     private void avoidXSS(String input) {
         if (input != null && !input.equals(HtmlUtils.htmlEscape(input))) {
-            throw new XssException("Not allowed nickname.");
+            throw new NotAllowedNickname("Not allowed nickname.");
         }
     }
 }

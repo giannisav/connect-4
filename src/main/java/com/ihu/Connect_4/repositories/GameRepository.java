@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface GameRepository extends JpaRepository<Game, Long> {
 
-    List<Game> findAllByGameStateEquals(GameState state);
+    List<Game> findAllByGameStateEqualsOrGameStateEquals(GameState state, GameState state2);
 
     @Modifying
     @Query("delete from Game g WHERE g.id IN (?1)")

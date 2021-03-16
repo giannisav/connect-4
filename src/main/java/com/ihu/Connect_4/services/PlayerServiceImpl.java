@@ -18,6 +18,8 @@ import java.util.Optional;
 @Service
 public class PlayerServiceImpl implements PlayerService {
 
+    private static final String SPACE = " ";
+
     private final PlayerRepository repository;
     private final PlayerMapper mapper;
 
@@ -54,7 +56,7 @@ public class PlayerServiceImpl implements PlayerService {
 
     private void validateNickname(String input) {
         avoidXSS(input);
-        if (input.contains(" ")) {
+        if (input.contains(SPACE)) {
             throw new NotAllowedNickname("Nickname should not contain any spaces.");
         }
     }

@@ -29,9 +29,9 @@ public class ScheduledTasks {
     public void clearOldEmptyGames(){
         LocalDateTime now = LocalDateTime.now();
 
-        List<Game> gamesToDelete = gameRepository.findAllByGameStateEquals(GameState.CREATED)
+        List<Game> gamesToDelete = gameRepository.findAllByGameStateEqualsOrGameStateEquals(GameState.CREATED, GameState.RUNNING)
                 .stream()
-                .filter(game -> Math.abs(Duration.between(now, game.getCreatedAt()).toMinutes()) >= 10)
+                .filter(game -> Math.abs(Duration.between(now, game.getCreatedAt()).toMinutes()) >= 40)
                 .collect(Collectors.toList());
         authRepository.deleteOldAuth(gamesToDelete);
 

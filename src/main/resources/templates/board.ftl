@@ -307,13 +307,10 @@
 
     function getNextMove(){
 
-        const url = "http://localhost:8080/api/games/isUpdated/" + gameId + '/' + numOfMoves ;
-        console.log(url);
+        const url = "https://app-connect-4.herokuapp.com/api/games/isUpdated/" + gameId + '/' + numOfMoves ;
         fetch(url)
             .then(res => res.json())
             .then(data => {
-                console.log(data);
-
                 if (data === false) {
                     document.getElementById("getStateForm").submit();
                 }

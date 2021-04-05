@@ -306,9 +306,8 @@
     }
 
     function getNextMove(){
-
-        const url = "https://app-connect-4.herokuapp.com/api/games/isUpdated/" + gameId + '/' + numOfMoves ;
-        fetch(url)
+        const url = window.location.protocol + "//" + window.location.host + "/api/games/isUpdated/" + gameId + '/' + numOfMoves ;
+        fetch(url, { credentials: 'include'})
             .then(res => res.json())
             .then(data => {
                 if (data === false) {

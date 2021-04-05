@@ -14,4 +14,5 @@ public interface GameService {
     GameDTO cheatPlay(String nickname, String uuid, Long id);
     List<GameDTO> findAvailableGames();
     Game fetchGame(Long id);
+    Boolean isUpdated(Long id, int numOfMoves);
 }

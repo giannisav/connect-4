@@ -22,7 +22,7 @@
 </style>
 <footer>
     <section class="allrights-reserved">
-        <p>Giannis Avramidis © 2020 | All rights reserved</p>
+        <p>Giannis Avramidis © 2021 | All rights reserved</p>
     </section>
     </section>
 </footer>

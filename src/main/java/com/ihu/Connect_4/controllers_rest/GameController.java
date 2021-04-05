@@ -80,6 +80,12 @@ public class GameController {
         return ResponseEntity.ok().body(gameVsAiService.cheatVsAi(nickname, uuid, id));
     }
 
+    @GetMapping("/isUpdated/{id}/{numOfMoves}")
+    public ResponseEntity<Boolean> isUpdated(@PathVariable("id") Long id,
+                                             @PathVariable("numOfMoves") int numOfMoves) {
+        return ResponseEntity.ok().body(gameService.isUpdated(id, numOfMoves));
+    }
+
     @ExceptionHandler({ NotExistingPlayerException.class, NotExistingGameException.class, InvalidMoveException.class,
             InvalidTurnPlayException.class, FullGameException.class })
     public ResponseEntity<String> badRequestExceptionHandler(RuntimeException exception) {

@@ -112,6 +112,12 @@ public class GameServiceImpl implements GameService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public Boolean isUpdated(Long id, int numOfMoves) {
+        Game game = fetchGame(id);
+        return game.getBoardMoves().length() == numOfMoves;
+    }
+
     private GameDTO gameHasWinner(Game game, String nickname, Integer column, String uuid) {
         game.setNextMoveNickname("Our winner is: " + nickname);
         game.setBoardMoves(game.getBoardMoves() + column);

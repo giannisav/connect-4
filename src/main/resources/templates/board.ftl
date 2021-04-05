@@ -204,6 +204,18 @@
         <#return "board"/>
     </#if>
 </#function>
+<#function moves board>
+    <#local numOfMoves = 0>
+    <#list board as row>
+        <#list row as col>
+            <#if (col == 'Y' || col == 'R')>
+                <#local numOfMoves += 1>
+            </#if>
+        </#list>
+    </#list>
+    <#return numOfMoves/>
+
+</#function>
 
 <table class="table">
     <tr>
@@ -233,6 +245,7 @@
         </div>
         </#list>
     </div>
+    <div id="numOfMoves" style="display: none">${moves(game.board)}</div>
     <div id="nick" style="display: none">${nickname}</div>
     <div class="forms">
         <form id="play" action="/play" method="post">
@@ -249,8 +262,8 @@
         </form>
         <form id ="getStateForm" action="/board" method="get">
             <input type="hidden" name="nickname" value=${nickname}>
-            <input type="hidden" name="uuid" value=${game.uuid}>
-            <input type="hidden" name="id" value=${game.id}>
+            <input id="uuid" type="hidden" name="uuid" value=${game.uuid}>
+            <input id="gameId" type="hidden" name="id" value=${game.id}>
         </form>
         <form id="cheat" style="margin-top: 20vh" method="post" onsubmit="set_action(this, '/cheatAI', '/cheat')">
             <input type="hidden" name="nickname" value=${nickname}>
@@ -265,6 +278,12 @@
 </body>
 <#include "./parts/footer.ftl">
 <script>
+
+    let nextMove = document.getElementById("nextMove").innerHTML;
+    let nickname = document.getElementById("nick").innerHTML;
+    let numOfMoves = document.getElementById("numOfMoves").innerHTML;
+    let gameId = document.getElementById("gameId").value;
+
     document.getElementById("board").addEventListener("click", (e) => {
         if (e.target.classList.contains("circle") && e.target.classList[1].length === 1) {
             document.getElementById("column").value = e.target.classList[1];
@@ -278,22 +297,37 @@
         }
     });
 
-    (function() {
-        let nextMove = document.getElementById("nextMove").innerHTML;
-        let nickname = document.getElementById("nick").innerHTML;
-        setInterval(function(){
-            if (nextMove !== nickname) {
-                document.getElementById("getStateForm").submit();
-            }
-        }, 7000);
-    })();
-
     function set_action(form, aiAction, playerAction) {
         if (document.getElementById("isVsAi").innerHTML === 'true') {
             form.action = aiAction;
         } else {
             form.action = playerAction;
         }
+    }
+
+    function getNextMove(){
+
+        const url = "http://localhost:8080/api/games/isUpdated/" + gameId + '/' + numOfMoves ;
+        console.log(url);
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                console.log(data);
+
+                if (data === false) {
+                    document.getElementById("getStateForm").submit();
+                }
+            });
+    }
+
+    async function checkForNextMove() {
+        await getNextMove();
+        setTimeout(checkForNextMove,5000);
+    }
+
+
+    if (nextMove !== nickname) {
+        checkForNextMove();
     }
 </script>
 </html>

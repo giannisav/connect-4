@@ -306,12 +306,14 @@
     }
 
     function getNextMove(){
-        const url = window.location.protocol + "//" + window.location.host + "/api/games/isUpdated/" + gameId + '/' + numOfMoves ;
+        const url = window.location.protocol + "//" + window.location.host + "/api/games/needsUpdate/" + gameId + '/' + numOfMoves ;
         fetch(url, { credentials: 'include'})
             .then(res => res.json())
             .then(data => {
-                if (data === false) {
-                    document.getElementById("getStateForm").submit();
+                if (data === true) {
+                    setTimeout(function() {
+                        document.getElementById("getStateForm").submit();
+                    }, 6000);
                 }
             });
     }

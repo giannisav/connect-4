@@ -113,9 +113,13 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public Boolean isUpdated(Long id, int numOfMoves) {
+    public Boolean needsUpdate(Long id, int numOfMoves) {
         Game game = fetchGame(id);
-        return game.getBoardMoves().length() == numOfMoves;
+        if (game.getGameState() == GameState.RUNNING && game.getBoardMoves().length() == 0) {
+            return true;
+        } else {
+            return !(game.getBoardMoves().length() == numOfMoves);
+        }
     }
 
     private GameDTO gameHasWinner(Game game, String nickname, Integer column, String uuid) {

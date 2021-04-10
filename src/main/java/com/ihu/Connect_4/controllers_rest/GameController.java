@@ -80,10 +80,10 @@ public class GameController {
         return ResponseEntity.ok().body(gameVsAiService.cheatVsAi(nickname, uuid, id));
     }
 
-    @GetMapping("/isUpdated/{id}/{numOfMoves}")
-    public ResponseEntity<Boolean> isUpdated(@PathVariable("id") Long id,
+    @GetMapping("/needsUpdate/{id}/{numOfMoves}")
+    public ResponseEntity<Boolean> needsUpdate(@PathVariable("id") Long id,
                                              @PathVariable("numOfMoves") int numOfMoves) {
-        return ResponseEntity.ok().body(gameService.isUpdated(id, numOfMoves));
+        return ResponseEntity.ok().body(gameService.needsUpdate(id, numOfMoves));
     }
 
     @ExceptionHandler({ NotExistingPlayerException.class, NotExistingGameException.class, InvalidMoveException.class,

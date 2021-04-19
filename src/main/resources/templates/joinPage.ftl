@@ -26,14 +26,12 @@
 
         input[type="text"] {
             border: 1px solid rgba(0,0,0,.5);
-            width: available;
             background: rgba(0,0,0,.25);
         }
 
         input[type="submit"] {
             margin-top: 5px;
             border: 1px solid rgba(0,0,0,.5);
-            width: available;
             background: rgba(0,0,0,.25);
         }
 

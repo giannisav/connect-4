@@ -1,5 +1,4 @@
-<link rel="stylesheet" href="./css/navbar.css"/>
-<body>
+<link rel="stylesheet" href="/css/navbar.css"/>
   <nav>
     <section class="navleft">
       <a href="/"><img id="navlogo" src="home.png" alt="Home"></a>
@@ -37,4 +36,3 @@
       </a>
     </section>
   </nav>
-</body>

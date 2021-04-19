@@ -22,7 +22,7 @@
     </style>
 </head>
 <body>
-<#include "parts/navbar.ftl">
+<#include "./parts/navbar.ftl">
 <div class="container">
     <h1>Register Player</h1>
     <form action="/register" method="post">

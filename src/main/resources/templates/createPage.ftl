@@ -23,7 +23,7 @@
 </head>
 
 <body>
-<#include "parts/navbar.ftl">
+<#include "./parts/navbar.ftl">
 <div class="container">
     <h1>Game Vs Player</h1>
     <form action="/create" method="post">

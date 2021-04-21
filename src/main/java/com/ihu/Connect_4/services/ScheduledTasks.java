@@ -2,7 +2,7 @@ package com.ihu.Connect_4.services;
 
 import com.ihu.Connect_4.entities.Game;
 import com.ihu.Connect_4.enums.GameState;
-import com.ihu.Connect_4.repositories.AuthenticationDetailsRepository;
+import com.ihu.Connect_4.repositories.GameDetailsRepository;
 import com.ihu.Connect_4.repositories.GameRepository;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -17,11 +17,11 @@ import java.util.stream.Collectors;
 public class ScheduledTasks {
 
     private final GameRepository gameRepository;
-    private final AuthenticationDetailsRepository authRepository;
+    private final GameDetailsRepository gameDetailsRepository;
 
-    public ScheduledTasks(GameRepository gameRepository, AuthenticationDetailsRepository authRepository) {
+    public ScheduledTasks(GameRepository gameRepository, GameDetailsRepository gameDetailsRepository) {
         this.gameRepository = gameRepository;
-        this.authRepository = authRepository;
+        this.gameDetailsRepository = gameDetailsRepository;
     }
 
     @Scheduled(cron = "0 15 10 * * *", zone = "Europe/Athens")
@@ -33,12 +33,12 @@ public class ScheduledTasks {
                 .stream()
                 .filter(game -> Math.abs(Duration.between(now, game.getCreatedAt()).toMinutes()) >= 40)
                 .collect(Collectors.toList());
-        authRepository.deleteOldAuth(gamesToDelete);
+        gameDetailsRepository.deleteOldDetails(gamesToDelete);
 
-        List<Long> idsToDelete = gamesToDelete
-                .stream()
+        List<Long> idOfGamesToDelete = gamesToDelete.stream()
                 .map(Game::getId)
                 .collect(Collectors.toList());
-        gameRepository.deleteOldGames(idsToDelete);
+
+        gameRepository.deleteOldGames(idOfGamesToDelete);
     }
 }

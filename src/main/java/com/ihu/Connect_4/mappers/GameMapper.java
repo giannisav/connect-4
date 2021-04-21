@@ -2,11 +2,19 @@ package com.ihu.Connect_4.mappers;
 
 import com.ihu.Connect_4.dtos.GameDTO;
 import com.ihu.Connect_4.entities.Game;
+import com.ihu.Connect_4.entities.GameDetails;
+import com.ihu.Connect_4.entities.Player;
 import com.ihu.Connect_4.utils.BoardUtil;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Component
 public class GameMapper {
+
+    private static final int YELLOW_PLAYER = 0;
+    private static final int RED_PLAYER = 1;
 
     private final BoardUtil boardUtil;
 
@@ -28,14 +36,23 @@ public class GameMapper {
 
     private GameDTO baseMapping(Game game) {
         GameDTO gameDTO = new GameDTO();
+        List<Player> players = fetchPlayersByGame(game);
         gameDTO.setId(game.getId());
         gameDTO.setNextMoveNickname(game.getNextMoveNickname());
-        gameDTO.setYellowPlayerNickname(game.getYellowPlayer().getNickname());
-        String redNickname = (game.getRedPlayer() == null) ? "Not connected" : game.getRedPlayer().getNickname();
+        gameDTO.setYellowPlayerNickname(players.get(YELLOW_PLAYER).getNickname());
+        String redNickname = (players.size() == 1) ? "Not connected" : players.get(RED_PLAYER).getNickname();
         gameDTO.setRedPlayerNickname(redNickname);
         gameDTO.setBoard(boardUtil.convertTo2DBoard(game.getBoardMoves()));
         gameDTO.setGameState(game.getGameState().name());
         gameDTO.setIsVsAi(game.getIsVsAi());
         return gameDTO;
+    }
+
+    private List<Player> fetchPlayersByGame(Game game) {
+        return game
+                .getGameDetails()
+                .stream()
+                .map(GameDetails::getPlayer)
+                .collect(Collectors.toList());
     }
 }

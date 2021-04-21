@@ -1,10 +1,12 @@
 package com.ihu.Connect_4.entities;
 
 import com.ihu.Connect_4.enums.GameState;
+import com.ihu.Connect_4.enums.PlayerColor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 @Entity
@@ -12,28 +14,26 @@ import java.util.List;
 public class Game {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "game_id", unique = true, nullable = false)
+    @Column(name = "gameId", unique = true, nullable = false)
     private Long id;
 
+    @Column(length = 42)
     private String nextMoveNickname;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    private Player yellowPlayer;
+    @OneToMany(mappedBy = "game",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<GameDetails> gameDetails = new ArrayList<>();
 
-    @OneToOne(cascade = CascadeType.ALL)
-    private Player redPlayer;
 
     @Column(length = 42)
     private String boardMoves;
 
     @Enumerated(EnumType.STRING)
-    private GameState gameState ;
+    private GameState gameState;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
-
-    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<AuthenticationDetails> authenticationDetails = new ArrayList<>();
 
     private boolean isVsAi;
 
@@ -47,13 +47,25 @@ public class Game {
         }
     }
 
-    public Game(){}
+    public Game() {}
 
-    public Game(Long id, String nextMoveNickname, Player yellowPlayer, Player redPlayer, String boardMoves, GameState gameState, boolean isVsAi) {
+    public Game(Player player, String nextMoveNickname, String boardMoves, boolean isVsAi) {
+        this.addPlayer(player);
+        this.nextMoveNickname = nextMoveNickname;
+        this.boardMoves = boardMoves;
+        this.isVsAi = isVsAi;
+    }
+
+    public Game(Player player, String uuid, PlayerColor playerColor, String nextMoveNickname, String boardMoves, boolean isVsAi) {
+        this.addPlayer(player, uuid, playerColor);
+        this.nextMoveNickname = nextMoveNickname;
+        this.boardMoves = boardMoves;
+        this.isVsAi = isVsAi;
+    }
+
+    public Game(Long id, String nextMoveNickname, String boardMoves, GameState gameState, boolean isVsAi) {
         this.id = id;
         this.nextMoveNickname = nextMoveNickname;
-        this.yellowPlayer = yellowPlayer;
-        this.redPlayer = redPlayer;
         this.boardMoves = boardMoves;
         this.gameState = gameState;
         this.isVsAi = isVsAi;
@@ -75,20 +87,39 @@ public class Game {
         this.nextMoveNickname = nextMoveNickname;
     }
 
-    public Player getYellowPlayer() {
-        return yellowPlayer;
+    public List<GameDetails> getGameDetails() {
+        return gameDetails;
     }
 
-    public void setYellowPlayer(Player yellowPlayer) {
-        this.yellowPlayer = yellowPlayer;
+    public void setGameDetails(List<GameDetails> gameDetails) {
+        this.gameDetails = gameDetails;
     }
 
-    public Player getRedPlayer() {
-        return redPlayer;
+    public void addPlayer(Player player) {
+        GameDetails gameDetails = new GameDetails(this, player);
+        this.gameDetails.add(gameDetails);
+        player.getGames().add(gameDetails);
     }
 
-    public void setRedPlayer(Player redPlayer) {
-        this.redPlayer = redPlayer;
+    public void addPlayer(Player player, String uuid, PlayerColor playerColor) {
+        GameDetails gameDetails = new GameDetails(this, player, uuid, playerColor);
+        this.gameDetails.add(gameDetails);
+        player.getGames().add(gameDetails);
+    }
+
+    public void removePlayer(Player player) {
+        for (Iterator<GameDetails> iterator = gameDetails.iterator();
+             iterator.hasNext(); ) {
+            GameDetails gameDetails = iterator.next();
+
+            if (gameDetails.getGame().equals(this) &&
+                    gameDetails.getPlayer().equals(player)) {
+                iterator.remove();
+                gameDetails.getPlayer().getGames().remove(gameDetails);
+                gameDetails.setGame(null);
+                gameDetails.setPlayer(null);
+            }
+        }
     }
 
     public String getBoardMoves() {
@@ -110,14 +141,6 @@ public class Game {
     public LocalDateTime getCreatedAt() { return createdAt; }
 
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-
-    public List<AuthenticationDetails> getAuthenticationDetails() {
-        return authenticationDetails;
-    }
-
-    public void setAuthenticationDetails(List<AuthenticationDetails> authenticationDetails) {
-        this.authenticationDetails = authenticationDetails;
-    }
 
     public boolean getIsVsAi() {
         return isVsAi;

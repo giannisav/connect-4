@@ -1,13 +1,13 @@
 package com.ihu.Connect_4.services;
 
 import com.ihu.Connect_4.dtos.GameDTO;
-import com.ihu.Connect_4.entities.AuthenticationDetails;
 import com.ihu.Connect_4.entities.Game;
+import com.ihu.Connect_4.entities.GameDetails;
 import com.ihu.Connect_4.entities.Player;
 import com.ihu.Connect_4.enums.GameState;
+import com.ihu.Connect_4.enums.PlayerColor;
 import com.ihu.Connect_4.exceptions.*;
 import com.ihu.Connect_4.mappers.GameMapper;
-import com.ihu.Connect_4.repositories.AuthenticationDetailsRepository;
 import com.ihu.Connect_4.repositories.GameRepository;
 import com.ihu.Connect_4.utils.BoardUtil;
 import org.springframework.stereotype.Service;
@@ -22,34 +22,30 @@ import java.util.stream.Collectors;
 @Service
 public class GameServiceImpl implements GameService {
 
+    private static final int ROOM_SIZE = 2;
+
     private final GameRepository repository;
     private final PlayerService playerService;
     private final GameMapper mapper;
     private final BoardUtil boardUtil;
     private final CheatService cheatService;
-    private final AuthenticationDetailsRepository authRepository;
 
     public GameServiceImpl(GameRepository repository, PlayerService playerService, GameMapper mapper,
-                           BoardUtil boardUtil, CheatService cheatService, AuthenticationDetailsRepository authRepository) {
+                           BoardUtil boardUtil, CheatService cheatService) {
         this.repository = repository;
         this.playerService = playerService;
         this.mapper = mapper;
         this.boardUtil = boardUtil;
         this.cheatService = cheatService;
-        this.authRepository = authRepository;
     }
 
     @Transactional
     @Override
     public GameDTO createGame(String nickname, boolean isVsAi) {
         Player player = playerService.fetchPlayer(nickname);
-        Game game = new Game();
-        game.setYellowPlayer(player);
-        game.setNextMoveNickname("Wait your opponent to connect");
-        game.setBoardMoves("");
-        game.setIsVsAi(isVsAi);
         String uuid = UUID.randomUUID().toString();
-        authRepository.save(new AuthenticationDetails(uuid, nickname, game));
+        Game game = new Game(player, uuid, PlayerColor.YELLOW,
+                "Wait your opponent to connect", "", isVsAi);
         return mapper.mapToGameDTOWithUuid(repository.save(game), uuid);
     }
 
@@ -58,14 +54,13 @@ public class GameServiceImpl implements GameService {
     public GameDTO joinGame(String nickname, Long id) {
         Game game = fetchGame(id);
         Player player = playerService.fetchPlayer(nickname);
-        if (game.getYellowPlayer() != null && game.getRedPlayer() != null) {
+        if (game.getGameDetails().size() == ROOM_SIZE) {
             throw new FullGameException("Sorry this game is full");
         }
-        game.setNextMoveNickname(game.getYellowPlayer().getNickname());
-        game.setRedPlayer(player);
+        game.setNextMoveNickname(getPlayer(game, PlayerColor.YELLOW).getNickname());
         game.setGameState(GameState.RUNNING);
         String uuid = UUID.randomUUID().toString();
-        authRepository.save(new AuthenticationDetails(uuid, nickname, game));
+        game.addPlayer(player, uuid, PlayerColor.RED);
         return mapper.mapToGameDTOWithUuid(repository.save(game), uuid);
     }
 
@@ -80,8 +75,7 @@ public class GameServiceImpl implements GameService {
         if (boardUtil.gameIsDrawIfMoveIsNotWinning(game.getBoardMoves())) {
             return resultIsDraw(game, column, uuid);
         }
-        String nextMoveNickname = nickname.equals(game.getYellowPlayer().getNickname()) ? game.getRedPlayer().getNickname() : game.getYellowPlayer().getNickname();
-        game.setNextMoveNickname(nextMoveNickname);
+        game.setNextMoveNickname(resolveNextMoveNickname(game, nickname));
         game.setBoardMoves(game.getBoardMoves() + column);
         return mapper.mapToGameDTOWithUuid(repository.save(game), uuid);
     }
@@ -126,8 +120,8 @@ public class GameServiceImpl implements GameService {
         game.setNextMoveNickname("Our winner is: " + nickname);
         game.setBoardMoves(game.getBoardMoves() + column);
         game.setGameState(GameState.FINISHED);
-        Player yellow = game.getYellowPlayer();
-        Player red = game.getRedPlayer();
+        Player yellow = getPlayer(game, PlayerColor.YELLOW);
+        Player red = getPlayer(game,PlayerColor.RED);
         if (nickname.equals(yellow.getNickname())) {
             winnerSettings(yellow, game.getIsVsAi());
             loserSettings(red);
@@ -142,8 +136,8 @@ public class GameServiceImpl implements GameService {
         game.setNextMoveNickname("Result is a draw");
         game.setBoardMoves(game.getBoardMoves() + column);
         game.setGameState(GameState.FINISHED);
-        drawSettings(game.getYellowPlayer());
-        drawSettings(game.getRedPlayer());
+        drawSettings(getPlayer(game, PlayerColor.YELLOW));
+        drawSettings(getPlayer(game,PlayerColor.RED));
         return mapper.mapToGameDTOWithUuid(repository.save(game), uuid);
     }
 
@@ -184,13 +178,32 @@ public class GameServiceImpl implements GameService {
         player.setLoses(player.getLoses() + 1);
     }
 
-    private void drawSettings(Player player){
+    private void drawSettings(Player player) {
         player.setGamesPlayed(player.getGamesPlayed() + 1);
         player.setDraws(player.getDraws() + 1);
     }
 
     private void authenticatePlayer(String nickname, String uuid, Game game) {
-        authRepository.findByNicknameAndUuidAndGameEquals(nickname, uuid, game)
+        game.getGameDetails().stream()
+                .filter(gameDetails ->
+                        gameDetails.getPlayer().getNickname().equals(nickname)
+                        && gameDetails.getUuid().equals(uuid))
+                .findAny()
                 .orElseThrow(() -> new UnauthorizedPlayerException("You are not authorized to do this"));
+    }
+
+    private String resolveNextMoveNickname(Game game, String nickname) {
+        if (nickname.equals(getPlayer(game, PlayerColor.YELLOW).getNickname())) {
+            return getPlayer(game, PlayerColor.RED).getNickname();
+        }
+        return getPlayer(game, PlayerColor.YELLOW).getNickname();
+    }
+
+    private Player getPlayer(Game game, PlayerColor playerColor) {
+        return game.getGameDetails().stream()
+                .filter(gameDetails -> gameDetails.getPlayerColor() == playerColor)
+                .map(GameDetails::getPlayer)
+                .findFirst()
+                .orElseThrow(() -> new NotExistingPlayerException("Player not found"));
     }
 }

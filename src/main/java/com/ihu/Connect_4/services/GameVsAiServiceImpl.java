@@ -1,11 +1,9 @@
 package com.ihu.Connect_4.services;
 
 import com.ihu.Connect_4.dtos.GameDTO;
-import com.ihu.Connect_4.entities.AuthenticationDetails;
-import com.ihu.Connect_4.entities.Game;
+import com.ihu.Connect_4.entities.GameDetails;
 import com.ihu.Connect_4.enums.GameState;
-import com.ihu.Connect_4.exceptions.NotExistingPlayerException;
-import com.ihu.Connect_4.repositories.AuthenticationDetailsRepository;
+import com.ihu.Connect_4.repositories.GameDetailsRepository;
 import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -16,11 +14,11 @@ public class GameVsAiServiceImpl implements GameVsAiService{
     protected static final String AI_ROBOT = "AI-Robot";
 
     private final GameService gameService;
-    private final AuthenticationDetailsRepository authRepository;
+    private final GameDetailsRepository gameDetailsRepository;
 
-    public GameVsAiServiceImpl(GameService gameService, AuthenticationDetailsRepository authRepository) {
+    public GameVsAiServiceImpl(GameService gameService, GameDetailsRepository gameDetailsRepository) {
         this.gameService = gameService;
-        this.authRepository = authRepository;
+        this.gameDetailsRepository = gameDetailsRepository;
     }
 
     @Transactional
@@ -50,9 +48,8 @@ public class GameVsAiServiceImpl implements GameVsAiService{
         if (gameDTO.getGameState().equals(GameState.FINISHED.name())){
             return gameDTO;
         }
-        AuthenticationDetails authDetails = authRepository.findByNicknameAndGame_Id(AI_ROBOT, id)
-                .orElseThrow(() -> new NotExistingPlayerException("Error with AI-Robot. Please inform ADMIN"));
-        GameDTO dtoToReturn = gameService.cheatPlay(AI_ROBOT, authDetails.getUuid(), id);
+        GameDetails gameDetails = gameDetailsRepository.findByGameIdAndNickname(id, AI_ROBOT);
+        GameDTO dtoToReturn = gameService.cheatPlay(AI_ROBOT, gameDetails.getUuid(), id);
         dtoToReturn.setUuid(gameDTO.getUuid());
         return dtoToReturn;
     }

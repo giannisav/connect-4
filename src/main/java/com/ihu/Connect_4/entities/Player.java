@@ -1,19 +1,25 @@
 package com.ihu.Connect_4.entities;
 
-
 import javax.persistence.*;
-
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "player")
 public class Player {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
+    @Column(name = "playerId")
     private Long id;
 
-    @Column(name = "nickname", unique = true, nullable = false)
+    @Column(name = "nickname", length = 42, unique = true, nullable = false)
     private String nickname;
+
+    @OneToMany(
+            mappedBy = "player",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<GameDetails> games = new ArrayList<>();
 
     private Long points ;
 
@@ -64,6 +70,14 @@ public class Player {
 
     public void setNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public List<GameDetails> getGames() {
+        return games;
+    }
+
+    public void setGames(List<GameDetails> games) {
+        this.games = games;
     }
 
     public Long getPoints() {

@@ -4,6 +4,8 @@ import com.ihu.Connect_4.dtos.GameDTO;
 import com.ihu.Connect_4.entities.Game;
 import com.ihu.Connect_4.entities.GameDetails;
 import com.ihu.Connect_4.entities.Player;
+import com.ihu.Connect_4.enums.PlayerColor;
+import com.ihu.Connect_4.exceptions.NotExistingPlayerException;
 import com.ihu.Connect_4.utils.BoardUtil;
 import org.springframework.stereotype.Component;
 
@@ -39,8 +41,8 @@ public class GameMapper {
         List<Player> players = fetchPlayersByGame(game);
         gameDTO.setId(game.getId());
         gameDTO.setNextMoveNickname(game.getNextMoveNickname());
-        gameDTO.setYellowPlayerNickname(players.get(YELLOW_PLAYER).getNickname());
-        String redNickname = (players.size() == 1) ? "Not connected" : players.get(RED_PLAYER).getNickname();
+        gameDTO.setYellowPlayerNickname(getPlayer(game, PlayerColor.YELLOW).getNickname());
+        String redNickname = (players.size() == 1) ? "Not connected" : getPlayer(game, PlayerColor.RED).getNickname();
         gameDTO.setRedPlayerNickname(redNickname);
         gameDTO.setBoard(boardUtil.convertTo2DBoard(game.getBoardMoves()));
         gameDTO.setGameState(game.getGameState().name());
@@ -54,5 +56,13 @@ public class GameMapper {
                 .stream()
                 .map(GameDetails::getPlayer)
                 .collect(Collectors.toList());
+    }
+
+    private Player getPlayer(Game game, PlayerColor playerColor) {
+        return game.getGameDetails().stream()
+                .filter(gameDetails -> gameDetails.getPlayerColor() == playerColor)
+                .map(GameDetails::getPlayer)
+                .findFirst()
+                .orElseThrow(() -> new NotExistingPlayerException("Player not found"));
     }
 }

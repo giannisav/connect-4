@@ -30,7 +30,7 @@ Try it at [https://app-connect-4.herokuapp.com/](https://app-connect-4.herokuapp
 | ENDPOINT | METHOD | PARAM TYPE | DESCRIPTION | RETURNS | STATUS |
 | --- | --- | --- | --- | --- | --- |
 | `/api/players/{nickname}` | POST | nickname-String | Register the player if does not exist | PlayerDTO | 200(OK) |
-| `/api/players/statistics` | GET | Request param: sortingType optional, enum (points, wins,loses, draws, gamesPlayed, winsVsAi).<br>Request param: sortingOrder optional, enum (asc, desc) |  Returns sorted statistics for all the players | List<PlayerDTO> | 200(ΟΚ) |
+| `/api/players/statistics` | GET | Request param: sortingType optional, enum (points, wins,loses, draws, gamesPlayed, winsVsAi).<br>Request param: sortingOrder optional, enum (asc, desc) |  Returns sorted statistics for all the players | List of PlayerDTO | 200(ΟΚ) |
 
 
 ## PlayerDTO
@@ -67,7 +67,7 @@ Try it at [https://app-connect-4.herokuapp.com/](https://app-connect-4.herokuapp
 | ENDPOINT | METHOD | PARAM TYPE | DESCRIPTION | RETURNS | STATUS |
 | --- | --- | --- | --- | --- | --- |
 | `/api/games/{nickname}` | POST | nickname-String | Create a game for the user with the specific nickname | GameResponseDTO | 200(OK), 400(BAD REQUEST) |
-| `/api/games` | GET |  | Rerurns all available games to join | List<GameResponseDTO> | 200(OK) |
+| `/api/games` | GET |  | Rerurns all available games to join | List of GameResponseDTO | 200(OK) |
 | `/api/games/join/{nickname}/{id}` | POST | nickname-String,<br>id-Intrger | Add player with the specific nickname to the game with the specific id | GameResponseDTO | 200(OK), 400(BAD REQUEST), 401(UNAUTHORIZED) |
 | `/api/games/play/{nickname}/{uuid}/{id}/{column}` | POST | nickname-String,<br>uuid-String,<br>id-Integer,<br>column-Integer | Plays for the specific player with this uuid to the game with this id the specific move | GameResponseDTO | 200(OK), 400(BAD REQUEST), 401(UNAUTHORIZED) |
 | `/api/games/{nickname}/{uuid}/{id}` | GET | nickname-String,<br>id-Integer | Returns all the needed information about the game | GameResponseDTO | 200(ΟΚ), 401(UNAUTHORIZED) |
